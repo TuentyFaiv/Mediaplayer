@@ -49,7 +49,7 @@ import '@tuentyfaiv/mediaplayer';
 | f           | Toggle fullscreen mode |
 | esc         | Exit fullscreen |
 
-## Contributing (coming soon)
+## Contributing
 If someone wants to add or improve something, I invite you to collaborate directly in this repository: [TuentyFaiv/Mediaplayer](https://github.com/TuentyFaiv/Mediaplayer) 
 
 # License
