@@ -1,0 +1,87 @@
+h1 {
+  color: white;
+  font-size: 26px;
+  margin: 0;
+  & * {
+    margin: 0;
+  }
+}
+
+.player_controls {
+  &-settings {
+    display: flex;
+    align-items: center;
+    outline: 0;
+    button {
+      width: 34px;
+      height: 34px;
+      margin: 0;
+      margin-left: 1.5em;
+      padding: 0;
+      background: transparent;
+      border: none;
+      border-radius: 30px;
+      outline: 0;
+      transition: background .5s ease;
+      &:nth-child(1) {
+        svg {
+          width: 22px;
+          height: 22px;
+        }
+      }
+      &:focus,
+      &:hover {
+        background: rgba(255, 255, 255, .15);
+        cursor: pointer;
+      }
+    }
+    & span {
+      position: absolute;
+      display: none;
+      align-items: center;
+      flex-wrap: nowrap;
+      padding: 5px;
+      background: rgba(0, 0, 0, .15);
+      color: white;
+      font-size: 14px;
+      border-radius: 5px;
+      top: 8px;
+      right: 3.5em;
+      transition: all 1s ease;
+      a, 
+      svg {
+        color: white;
+        text-decoration: none;
+      }
+      div {
+        display: flex;
+        height: 32px;
+        width: 32px;
+        margin: 0 .3em;
+        background: transparent;
+        border-radius: 32px;
+        align-items: center;
+        justify-content: center;
+        transition: background .5s ease;
+        &:focus,
+        &:hover {
+          background: rgba(255, 255, 255, .2);
+          cursor: pointer;
+        }
+      }
+      svg {
+        height: 22px;
+        width: 22px; 
+      }
+    }
+    &:focus,
+    &:hover {
+      button {
+        background: rgba(255, 255, 255, .15);
+      }
+      span {
+        display: flex;
+      }
+    }
+  }
+}

@@ -1,0 +1,22 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./lib",
+    "baseUrl": "./",
+    "noImplicitAny": true,
+    "allowJs": true
+  },
+  "exclude": [
+    "node_modules",
+    "lib",
+    "./**/index.ts",
+    "./**/Ads.ts",
+    "./**/AutoPause.ts",
+    "./**/AutoPlay.ts",
+  ]
+}

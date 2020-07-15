@@ -1,0 +1,63 @@
+#play,
+#backward,
+#forward {
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  border: none;
+  outline: 0;
+  &:hover,
+  &:active {
+    cursor: pointer;
+    border: none;
+  }
+}
+#play {
+  width: 35px;
+  height: 35px;
+  margin: 0 1em;
+  transition: transform .5s ease;
+  svg {
+    width: 35px;
+    height: 35px;
+  }
+  &:hover {
+    transform: scale(1.1);
+  }
+  &:active {
+    transform: scale(.9);
+  }
+}
+#backward,
+#forward {
+  width: 30px;
+  height: 30px;
+  transition: transform .5s ease;
+  svg {
+    width: 30px;
+    height: 30px;
+  }
+}
+
+#backward {
+  &:hover {
+    transform: scale(1.1);
+  }
+  &:active {
+    transform: rotateZ(-45deg);
+  }
+}
+#forward {
+  &:hover {
+    transform: scale(1.1);
+  }
+  &:active {
+    transform: rotateZ(45deg);
+  }
+}
+
+#divPlay {
+  position: absolute;
+  z-index: 23;
+  background: transparent;
+}
