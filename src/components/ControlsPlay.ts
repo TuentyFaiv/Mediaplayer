@@ -40,7 +40,7 @@ class ControlsPlay extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild(styles);
+    this.shadowRoot.appendChild(styles.cloneNode(true));
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.playbox = this.shadowRoot.querySelector('#divPlay');

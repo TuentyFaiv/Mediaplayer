@@ -1,5 +1,4 @@
 import textTimeStyles from '../css/components/textTime.scss';
-import ControlsModes from './ControlsModes';
 
 const styles = document.createElement('style');
 styles.type = 'text/css';
@@ -31,7 +30,7 @@ class ControlsTimeText extends HTMLElement {
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild(styles);
+    this.shadowRoot.appendChild(styles.cloneNode(true));
     this.shadowRoot.appendChild(template.content.cloneNode(true));
 
     this.durationSpan = this.shadowRoot.getElementById('totalTime');
