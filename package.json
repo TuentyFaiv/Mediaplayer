@@ -29,5 +29,17 @@
     "webpack": "^4.43.0",
     "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.11.0"
-  }
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "dependencies": {},
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TuentyFaiv/Mediaplayer.git"
+  },
+  "bugs": {
+    "url": "https://github.com/TuentyFaiv/Mediaplayer/issues"
+  },
+  "homepage": "https://github.com/TuentyFaiv/Mediaplayer#readme"
 }

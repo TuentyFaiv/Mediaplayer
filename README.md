@@ -50,7 +50,7 @@ import '@tuentyfaiv/mediaplayer';
 | esc         | Exit fullscreen |
 
 ## Contributing (coming soon)
-If someone wants to add or improve something, I invite you to collaborate directly in this repository: [TuentyFaiv](https://github.com/TuentyFaiv/mediaplayer) 
+If someone wants to add or improve something, I invite you to collaborate directly in this repository: [TuentyFaiv/Mediaplayer](https://github.com/TuentyFaiv/Mediaplayer) 
 
 # License
 @tuentyfaiv/mediaplayer is released under the [MIT License](https://opensource.org/licenses/MIT).
