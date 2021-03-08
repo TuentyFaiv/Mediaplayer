@@ -13,7 +13,8 @@
     "video",
     "mediaplayer",
     "webpack",
-    "sass"
+    "sass",
+    "webcomponents"
   ],
   "author": "Tonalli <contact@tuentyfaiv.com>",
   "license": "MIT",

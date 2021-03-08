@@ -1,4 +1,6 @@
 import { changeIcon } from '../utils/globalUtils';
+import { MediaStyles } from '../utils/interfaces';
+
 import modesStyles from '../css/components/modes.scss';
 
 import fullscreenIcon from '../icons/fullscreen.svg';
@@ -28,13 +30,13 @@ class ControlsModes extends HTMLElement {
   btns: any;
   video: any;
   teatherState: boolean;
-  videoStyles: any;
+  videoStyles: MediaStyles;
 
   set media(media: HTMLVideoElement) {
     this.video = media;
   }
 
-  set styles(styles: any) {
+  set styles(styles: MediaStyles) {
     this.videoStyles = styles;
   }
 
@@ -61,7 +63,7 @@ class ControlsModes extends HTMLElement {
     document.addEventListener('keydown', this.keyPress.bind(this));
   }
 
-  keyPress(event: any) {
+  keyPress(event: KeyboardEvent) {
     switch (event.keyCode) {
       case 70:
         this.toggleFullScreen();

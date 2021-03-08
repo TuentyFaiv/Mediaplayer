@@ -3,6 +3,8 @@ import ControlsTimeText from './components/TextTime';
 import ControlsSound from './components/ControlsSound';
 import ControlsPlay from './components/ControlsPlay';
 import ControlsModes from './components/ControlsModes';
+import { MediaStyles, MediaTime } from './utils/interfaces';
+
 import controlsStyles from './css/controls.scss';
 
 import './components/ControlsHeader';
@@ -62,35 +64,35 @@ class Controls extends HTMLElement {
     this.header.title = title;
   }
 
-  set time(time: any) {
-    this.duration = time.duration;
-    this.textTime.time = time;
+  set time(duration: MediaTime) {
+    this.duration = duration.time;
+    this.textTime.time = duration.timeText;
     this.durationInput.max = this.duration;
   }
 
-  set currentTime(current: any) {
-    this.textTime.currentTime = current;
+  set current(current: MediaTime) {
+    this.textTime.currentTime = current.timeText;
     if (this.video.buffered.length === 0) {
       this.buffered = this.video.buffered.end(0);
     } else {
       this.buffered = this.video.buffered.end(this.video.buffered.length - 1);
     }
-    this.updateTime(current.current);
-    this.durationInput.value = current.current;
+    this.updateTime(current.time);
+    this.durationInput.value = current.time;
   }
 
-  set media(media: any) {
+  set media(media: HTMLVideoElement) {
     this.video = media;
     this.sound.media = this.video;
     this.play.media = this.video;
     this.modes.media = this.video;
   }
 
-  set share(share: any) {
+  set share(share: string) {
     this.header.share = share;
   }
 
-  set styles(styles: any) {
+  set styles(styles: MediaStyles) {
     this.modes.styles = styles;
   }
 
@@ -132,7 +134,7 @@ class Controls extends HTMLElement {
     this.container.style.cursor = 'pointer';
   }
 
-  hideControls(event: any) {
+  hideControls(event: MouseEvent) {
     let timeout;
     const moveX = event.movementX;
     const moveY = event.movementY;

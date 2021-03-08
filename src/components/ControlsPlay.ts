@@ -56,7 +56,7 @@ class ControlsPlay extends HTMLElement {
     document.addEventListener('keydown', this.keyPress.bind(this));
   }
 
-  keyPress(event: any) {
+  keyPress(event: KeyboardEvent) {
     switch (event.keyCode) {
       case 37:
         this.moveTo(-10);

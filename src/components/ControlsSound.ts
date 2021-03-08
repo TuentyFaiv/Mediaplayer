@@ -61,7 +61,7 @@ class ControlsSound extends HTMLElement {
     document.addEventListener('keydown', this.keyPress.bind(this));
   }
 
-  keyPress(event: any) {
+  keyPress(event: KeyboardEvent) {
     switch (event.keyCode) {
       case 77:
         this.toggleMute();

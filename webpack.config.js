@@ -46,13 +46,6 @@ module.exports = {
           }
         ]
       },
-      // {
-      //   test: /\.svg$/,
-      //   loader: 'file-loader',
-      //   options: {
-      //     name: '[name].[ext]'
-      //   }
-      // },
       {
         test: /\.svg$/,
         use: [
@@ -61,8 +54,6 @@ module.exports = {
             options: {
               mimetype: false,
               encoding: false,
-              // esModule: false,
-              // generator: (content) => svgToMiniDataURI(content.toString()),
             },
           },
         ],

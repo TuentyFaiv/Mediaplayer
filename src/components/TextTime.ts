@@ -1,3 +1,4 @@
+import { MediaTime } from '../utils/interfaces';
 import textTimeStyles from '../css/components/textTime.scss';
 
 const styles = document.createElement('style');
@@ -12,19 +13,15 @@ template.innerHTML = `
 `;
 
 class ControlsTimeText extends HTMLElement {
-  duration: number;
   durationSpan: HTMLElement;
-  current: number;
   currentSpan: HTMLElement;
 
-  set time(time: any) {
-    this.duration = time.duration;
-    this.durationSpan.innerHTML = time.durationText;
+  set time(duration: string) {
+    this.durationSpan.innerHTML = duration;
   }
 
-  set currentTime(current: any) {
-    this.current = current.current;
-    this.currentSpan.innerHTML = current.currentText;
+  set currentTime(current: string) {
+    this.currentSpan.innerHTML = current;
   }
 
   constructor() {

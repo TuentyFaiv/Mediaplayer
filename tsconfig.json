@@ -1,13 +1,15 @@
 {
   "compilerOptions": {
+    "target": "ES2017",
     "module": "commonjs",
+    "outDir": "./lib",
+    "baseUrl": "./",
+    "moduleResolution": "node",
+    "traceResolution": true,
     "declaration": true,
     "removeComments": true,
     "allowSyntheticDefaultImports": true,
-    "target": "es2017",
     "sourceMap": true,
-    "outDir": "./lib",
-    "baseUrl": "./",
     "noImplicitAny": true,
     "allowJs": true
   },

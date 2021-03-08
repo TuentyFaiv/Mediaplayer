@@ -47,22 +47,22 @@ class MediaPlayer extends HTMLElement {
     this.loading = this.shadowRoot.querySelector('.loader__container');
 
     this.container.style.width = this.getAttribute('w') || '100%';
-    this.container.style.height = this.getAttribute('h') || '100%';
+    this.container.style.height = this.getAttribute('h') || '540px';
 
-    this.media.style.background = this.getAttribute('bg') || "#040305";
+    this.media.style.background = this.getAttribute('bg') || "#040306";
     this.media.setAttribute('src', this.getAttribute('src'));
 
     if (this.getAttribute('poster')) {
-      this.media.poster = this.getAttribute('poster') || "";
+      this.media.poster = this.getAttribute('poster');
     }
 
-    this.controls.title = this.getAttribute('titleText');
+    this.controls.title = this.getAttribute('titleText') || "";
     this.controls.media = this.media;
     this.controls.share = this.getAttribute('share');
     this.controls.styles = {
-      width: this.getAttribute('w') || '100%',
-      height: this.getAttribute('h') || '100%',
-      background: this.getAttribute('bg') || '#040305',
+      width: this.container.style.width,
+      height: this.container.style.height,
+      background: this.media.style.background,
     };
 
     this.actions.removeChild(this.actions.firstChild);
@@ -117,8 +117,8 @@ class MediaPlayer extends HTMLElement {
     const formatedDuration = this.formatTime(video.duration);
 
     this.controls.time = {
-      durationText: formatedDuration,
-      duration: video.duration,
+      timeText: formatedDuration,
+      time: video.duration,
     };
   }
 
@@ -126,9 +126,9 @@ class MediaPlayer extends HTMLElement {
     const video: HTMLVideoElement = event.target;
     const formatedCurrentTime = this.formatTime(video.currentTime);
 
-    this.controls.currentTime = {
-      currentText: formatedCurrentTime,
-      current: video.currentTime,
+    this.controls.current = {
+      timeText: formatedCurrentTime,
+      time: video.currentTime,
     };
   }
 
