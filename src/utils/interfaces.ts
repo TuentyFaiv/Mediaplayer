@@ -1,10 +1,4 @@
 export interface MediaTime {
+  timeNumber: number;
   timeText: string;
-  time: number;
-};
-
-export interface MediaStyles {
-  width: string;
-  height: string;
-  background: string;
 };
