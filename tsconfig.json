@@ -1,24 +1,48 @@
 {
   "compilerOptions": {
-    "target": "ES2017",
-    "module": "commonjs",
+    "target": "ESNext",
+    "module": "ES6",
+    "lib": [
+      "DOM",
+      "ESNext",
+      "ES6"
+    ],
+    "allowJs": true,
+    "sourceMap": true,
     "outDir": "./lib",
-    "baseUrl": "./",
+    "removeComments": true,
+    "importHelpers": true,
+    // "strict": true,
     "moduleResolution": "node",
+    "downlevelIteration": true,
     "traceResolution": true,
     "declaration": true,
-    "removeComments": true,
     "allowSyntheticDefaultImports": true,
-    "sourceMap": true,
-    "noImplicitAny": true,
-    "allowJs": true
+    "baseUrl": "./src/",
+    "paths": {
+      "@components/*": [
+        "./components/*"
+      ],
+      "@icons/*": [
+        "./icons/*"
+      ],
+      "@styles/*": [
+        "./styles/*"
+      ],
+      "@utils/*": [
+        "./utils/*"
+      ],
+      "@interfaces": [
+        "./utils/interfaces.ts"
+      ]
+    }
   },
   "exclude": [
     "node_modules",
-    "lib",
-    "./**/index.ts",
-    "./**/Ads.ts",
-    "./**/AutoPause.ts",
-    "./**/AutoPlay.ts",
+    "lib"
+  ],
+  "include": [
+    "./src/**/*",
+    "./declaration.d.ts"
   ]
 }

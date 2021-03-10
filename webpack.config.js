@@ -1,4 +1,6 @@
 const path = require('path');
+const TerserJSPlugin = require('terser-webpack-plugin');
+const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 
 module.exports = {
   devtool: 'inline-source-map',
@@ -10,6 +12,7 @@ module.exports = {
     crossOriginLoading: 'anonymous'
   },
   devServer: {
+    contentBase: path.join(__dirname, 'lib'),
     port: 4000,
     hot: true,
     publicPath: '/',
@@ -23,7 +26,8 @@ module.exports = {
     }
   },
   resolve: {
-    extensions: ['.ts', '.js', '.scss'],
+    plugins: [new TsconfigPathsPlugin()],
+    extensions: ['.ts', '.js', '.scss', '.svg'],
   },
   module: {
     rules: [
@@ -59,5 +63,9 @@ module.exports = {
         ],
       },
     ],
+  },
+  optimization: {
+    minimize: true,
+    minimizer: [new TerserJSPlugin()]
   }
 };
