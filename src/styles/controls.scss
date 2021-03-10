@@ -23,7 +23,7 @@ tf-controls-header,
   justify-content: space-between;
   left: 0;
   right: 0;
-  z-index: 22;
+  z-index: 20;
 }
 
 tf-controls-header {
@@ -36,7 +36,7 @@ tf-controls-play {
   left: 50%;
   bottom: 0;
   transform: translateX(-50%);
-  z-index: 23;
+  z-index: 25;
 }
 
 .player_controls-footer {
@@ -50,7 +50,7 @@ tf-controls-play {
   right: 0;
   bottom: 0;
   outline: 0;
-  z-index: 20;
+  z-index: 15;
   &-time {
     position: relative;
     width: 100%;
@@ -80,7 +80,7 @@ tf-controls-play {
     top: 0;
     left: 0;
     right: 0;
-    z-index: 20;
+    z-index: 25;
     &::-webkit-slider-runnable-track,
     &::-moz-range-track,
     &::-ms-track {

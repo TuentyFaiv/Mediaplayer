@@ -1,6 +1,8 @@
-.player{
+.player {
   &_container {
     position: relative;
+    width: var(--player-width);
+    height: var(--player-height);
     tf-player-controls,
     .player_video {
       position: absolute;
@@ -13,12 +15,13 @@
     }
     tf-player-controls {
       background: transparent;
-      z-index: 15;
+      z-index: 10;
     }
-  }
-  &_video {
-    object-fit: contain;
-    z-index: 10;
+    .player_video {
+      object-fit: contain;
+      z-index: 0;
+      background-color: var(--player-background);
+    }
   }
   &_actions {
     position: absolute;
@@ -68,7 +71,7 @@
     top: 0;
     left: 0;
     right: 0;
-    z-index: 14;
+    z-index: 5;
   }
   div {
     box-sizing: border-box;

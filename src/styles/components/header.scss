@@ -8,7 +8,7 @@ h1 {
 }
 
 .player_controls {
-  &-settings {
+  &-share {
     display: flex;
     align-items: center;
     outline: 0;
@@ -16,7 +16,6 @@ h1 {
       width: 34px;
       height: 34px;
       margin: 0;
-      margin-left: 1.5em;
       padding: 0;
       background: transparent;
       border: none;
@@ -78,9 +77,6 @@ h1 {
     &:hover {
       button {
         background: rgba(255, 255, 255, .15);
-      }
-      span {
-        display: flex;
       }
     }
   }
