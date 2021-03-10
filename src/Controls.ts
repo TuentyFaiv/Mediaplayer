@@ -1,114 +1,145 @@
-import ControlsHeader from './components/ControlsHeader';
-import ControlsTimeText from './components/TextTime';
-import ControlsSound from './components/ControlsSound';
-import ControlsPlay from './components/ControlsPlay';
-import ControlsModes from './components/ControlsModes';
-import { MediaStyles, MediaTime } from './utils/interfaces';
+import { MediaTime } from '@interfaces';
+import controlsStyles from '@styles/controls.scss';
 
-import controlsStyles from './css/controls.scss';
-
-import './components/ControlsHeader';
-import './components/ControlsPlay';
-import './components/TextTime';
-import './components/ControlsSound';
-import './components/ControlsModes';
-
-const styles = document.createElement('style');
-styles.type = 'text/css';
-styles.appendChild(document.createTextNode(controlsStyles));
-
-const template = document.createElement('template');
-template.innerHTML = `
-  <div class="player_controls" tabindex="0">
-    <tf-controls-header></tf-controls-header>
-    <div class="player_controls-footer">
-      <div class="player_controls-time">
-        <input
-          id="timeInput"
-          class="player_controls-inputTime"
-          type="range"
-          min="0"
-          value="0"
-        />
-        <div class="player_played">
-        </div>
-        <div class="player_buffered">
-        </div>
-      </div>
-      <div class="player_controls-timeAndSound">
-        <tf-controls-text-time></tf-controls-text-time>
-        <tf-controls-sound></tf-controls-sound>
-      </div>
-      <tf-controls-play></tf-controls-play>
-      <tf-controls-modes></tf-controls-modes>
-    </div>
-  </div>
-`;
+import '@components/ControlsHeader';
+import ControlsPlay from '@components/ControlsPlay';
+import '@components/ControlsPlay';
+import ControlsTimeText from '@components/ControlsTimeText';
+import '@components/ControlsTimeText';
+import ControlsSound from '@components/ControlsSound';
+import '@components/ControlsSound';
+import ControlsModes from '@components/ControlsModes';
+import '@components/ControlsModes';
 
 class Controls extends HTMLElement {
-  header: ControlsHeader;
-  durationInput: any;
-  textTime: ControlsTimeText;
-  sound: ControlsSound;
-  play: ControlsPlay;
-  modes: ControlsModes;
-  video: HTMLVideoElement;
-  container: HTMLElement;
-  played: number;
+  controls_play: ControlsPlay;
+  controls_timeText: ControlsTimeText;
+  controls_sound: ControlsSound;
+  controls_modes: ControlsModes;
+  durationInput: HTMLInputElement;
+  container: HTMLDivElement;
   buffered: number;
-  playedEl: HTMLElement;
-  bufferedEl: HTMLElement;
-  duration: number;
+  playedEl: HTMLDivElement;
+  bufferedEl: HTMLDivElement;
+  player_background: string;
+  player_duration: number;
+  player_duration_text: string;
+  player_current: number;
+  player_current_text: string;
+  //Attributes
+  player_media: HTMLVideoElement;
+  player_title: string;
+  player_share: string;
+  player_width: string;
+  player_height: string;
 
-  set title(title: string) {
-    this.header.title = title;
+  set media(media: HTMLVideoElement) {
+    this.player_media = media;
+    this.controls_sound.media = this.player_media;
+    this.controls_play.media = this.player_media;
+    this.controls_modes.media = this.player_media;
   }
-
-  set time(duration: MediaTime) {
-    this.duration = duration.time;
-    this.textTime.time = duration.timeText;
-    this.durationInput.max = this.duration;
+  set duration(duration: MediaTime) {
+    this.player_duration_text = duration.timeText;
+    this.controls_timeText.duration = this.player_duration_text;
+    this.player_duration = duration.timeNumber;
+    this.durationInput.max = this.player_duration.toString();
   }
 
   set current(current: MediaTime) {
-    this.textTime.currentTime = current.timeText;
-    if (this.video.buffered.length === 0) {
-      this.buffered = this.video.buffered.end(0);
+    this.player_current_text = current.timeText;
+    if (this.player_media.buffered.length === 0) {
+      this.buffered = this.player_media.buffered.end(0);
     } else {
-      this.buffered = this.video.buffered.end(this.video.buffered.length - 1);
+      this.buffered = this.player_media.buffered.end(this.player_media.buffered.length - 1);
     }
-    this.updateTime(current.time);
-    this.durationInput.value = current.time;
+    this.controls_timeText.current = this.player_current_text;
+    this.updateTime(current.timeNumber);
+    this.player_current = current.timeNumber;
+    this.durationInput.value = this.player_current.toString();
   }
 
-  set media(media: HTMLVideoElement) {
-    this.video = media;
-    this.sound.media = this.video;
-    this.play.media = this.video;
-    this.modes.media = this.video;
-  }
-
-  set share(share: string) {
-    this.header.share = share;
-  }
-
-  set styles(styles: MediaStyles) {
-    this.modes.styles = styles;
-  }
-
+  //Life cycle
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild(styles.cloneNode(true));
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.player_current = 0;
+  }
+
+  static get observedAttributes(): string[] {
+    return [
+      'player_media',
+      'player_title',
+      'player_share',
+      'player_width',
+      'player_height',
+      'player_background',
+      'duration',
+      'current'
+    ];
+  }
+
+  attributeChangedCallback(attr, oldAttr, newAttr): void {
+    this[attr] = newAttr;
+  };
+
+  getTemplate(): HTMLTemplateElement {
+    const template = document.createElement('template');
+    template.innerHTML = `
+      ${this.getStyles()}
+      <div class="player_controls" tabindex="0">
+        <tf-controls-header
+          player_title="${this.player_title}"
+          player_share="${this.player_share}"
+        ></tf-controls-header>
+        <div class="player_controls-footer">
+          <div class="player_controls-time">
+            <input
+              id="timeInput"
+              class="player_controls-inputTime"
+              type="range"
+              min="0"
+              value="${this.player_current}"
+              max="${this.player_duration}"
+              />
+            <div class="player_played"></div>
+            <div class="player_buffered"></div>
+          </div>
+          <div class="player_controls-timeAndSound">
+            <tf-controls-time-text></tf-controls-time-text>
+            <tf-controls-sound></tf-controls-sound>
+          </div>
+          <tf-controls-play></tf-controls-play>
+          <tf-controls-modes
+            player_width="${this.player_width}"
+            player_height="${this.player_height}"
+            player_background="${this.player_background}"
+          ></tf-controls-modes>
+        </div>
+      </div>
+    `;
+
+    return template;
+  }
+
+  getStyles(): string {
+    return `
+      <style type="text/css">
+        :host {}
+        ${controlsStyles}
+      </style>
+    `;
+  }
+
+  render(): void {
+    this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
     this.container = this.shadowRoot.querySelector('.player_controls');
-    this.header = this.shadowRoot.querySelector('tf-controls-header');
-    this.durationInput = this.shadowRoot.getElementById('timeInput');
-    this.textTime = this.shadowRoot.querySelector('tf-controls-text-time');
-    this.sound = this.shadowRoot.querySelector('tf-controls-sound');
-    this.play = this.shadowRoot.querySelector('tf-controls-play');
-    this.modes = this.shadowRoot.querySelector('tf-controls-modes');
+    this.durationInput = this.shadowRoot.querySelector('input#timeInput');
+    this.controls_play = this.shadowRoot.querySelector('tf-controls-play');
+    this.controls_timeText = this.shadowRoot.querySelector('tf-controls-time-text');
+    this.controls_sound = this.shadowRoot.querySelector('tf-controls-sound');
+    this.controls_modes = this.shadowRoot.querySelector('tf-controls-modes');
 
     this.playedEl = this.shadowRoot.querySelector('.player_played');
     this.bufferedEl = this.shadowRoot.querySelector('.player_buffered');
@@ -129,12 +160,17 @@ class Controls extends HTMLElement {
     }
   }
 
-  showControls() {
-    this.container.style.opacity = '1';
-    this.container.style.cursor = 'pointer';
+  connectedCallback(): void {
+    this.render();
   }
 
-  hideControls(event: MouseEvent) {
+  //Features
+  showControls(): void {
+    this.container.style.opacity = '1';
+    this.container.style.cursor = 'auto';
+  }
+
+  hideControls(event: MouseEvent): void {
     let timeout;
     const moveX = event.movementX;
     const moveY = event.movementY;
@@ -146,16 +182,16 @@ class Controls extends HTMLElement {
     }
   }
 
-  updateProgress(event: any) {
-    this.video.currentTime = event.target.value;
+  updateProgress(event: any): void {
+    this.player_media.currentTime = event.target.value;
     this.updateTime(event.target.value);
 
-    this.buffered = this.video.buffered.end(this.video.buffered.length - 1);
+    this.buffered = this.player_media.buffered.end(this.player_media.buffered.length - 1);
   }
 
-  updateTime(time: number) {
-    const widthPlayedEl: number = (time * 100) / this.duration;
-    const widthBuffereddEl: number = (this.buffered * 100) / this.duration;
+  updateTime(time: number): void {
+    const widthPlayedEl: number = (time * 100) / this.player_duration;
+    const widthBuffereddEl: number = (this.buffered * 100) / this.player_duration;
 
     this.playedEl.style.width = `calc(${widthPlayedEl}% + 4px)`;
     this.bufferedEl.style.width = `${widthBuffereddEl}%`;

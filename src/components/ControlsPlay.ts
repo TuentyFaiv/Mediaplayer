@@ -1,51 +1,73 @@
-import { changeIcon } from '../utils/globalUtils';
-import controlsPlayStyles from '../css/components/play.scss';
+import { changeIcon } from '@utils/globalUtils';
+import controlsPlayStyles from '@styles/components/play.scss';
 
-import playIcon from '../icons/play.svg';
-import pauseIcon from '../icons/pause.svg';
-import forwardIcon from '../icons/forward.svg';
-import replayIcon from '../icons/replay.svg';
-
-const styles = document.createElement('style');
-styles.type = 'text/css';
-styles.appendChild(document.createTextNode(controlsPlayStyles));
-
-const template = document.createElement('template');
-template.innerHTML = `
-  <div id="divPlay">
-  </div>
-  <button id="backward" title="Backward 10s (Arrow left)">
-    ${replayIcon}
-  </button>
-  <button id="play" title="Play/Pause (Spacebar)">
-    ${pauseIcon}
-  </button>
-  <button id="forward" title="Forward 10s (Arrow right)">
-    ${forwardIcon}
-  </button>
-`;
+import playIcon from '@icons/play.svg';
+import pauseIcon from '@icons/pause.svg';
+import forwardIcon from '@icons/forward.svg';
+import replayIcon from '@icons/replay.svg';
 
 class ControlsPlay extends HTMLElement {
-  btns: any;
-  video: HTMLVideoElement;
-  playbox: HTMLElement;
+  btns: NodeListOf<HTMLButtonElement>;
+  playbox: HTMLDivElement;
+  //Attributes
+  player_media: HTMLVideoElement;
 
   set media(media: HTMLVideoElement) {
-    this.video = media;
-    this.playbox.style.top = `calc(-${this.video.offsetHeight}px + 90px)`;
-    this.playbox.style.width = `${this.video.offsetWidth}px`;
-    this.playbox.style.height = `calc(${this.video.offsetHeight}px - 110px)`;
+    this.player_media = media;
+    this.playbox.style.top = `calc(-${this.player_media.offsetHeight}px + 90px)`;
+    this.playbox.style.width = `${this.player_media.offsetWidth}px`;
+    this.playbox.style.height = `calc(${this.player_media.offsetHeight}px - 110px)`;
   }
 
+  //Life cycle
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild(styles.cloneNode(true));
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
+  }
+
+  static get observedAttributes(): string[] {
+    return ['player_media'];
+  }
+
+  attributeChangedCallback(attr, oldAttr, newAttr): void {
+    this[attr] = newAttr;
+  }
+
+  getTemplate(): HTMLTemplateElement {
+    const template = document.createElement('template');
+    template.innerHTML = `
+      ${this.getStyles()}
+      <div id="divPlay">
+      </div>
+      <button class="backward" title="Backward 10s (Arrow left)">
+        ${replayIcon}
+      </button>
+      <button class="play" title="Play/Pause (Spacebar)">
+        ${pauseIcon}
+      </button>
+      <button class="forward" title="Forward 10s (Arrow right)">
+        ${forwardIcon}
+      </button>
+    `;
+
+    return template;
+  }
+
+  getStyles(): string {
+    return `
+      <style type="text/css">
+        :host {}
+        ${controlsPlayStyles}
+      </style>
+    `;
+  }
+
+  render(): void {
+    this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
     this.playbox = this.shadowRoot.querySelector('#divPlay');
     this.btns = this.shadowRoot.querySelectorAll('button');
-    this.btns.forEach((element: HTMLElement) => {
+    this.btns.forEach((element: HTMLButtonElement) => {
       element.removeChild(element.firstChild);
     });
 
@@ -56,7 +78,12 @@ class ControlsPlay extends HTMLElement {
     document.addEventListener('keydown', this.keyPress.bind(this));
   }
 
-  keyPress(event: KeyboardEvent) {
+  connectedCallback(): void {
+    this.render();
+  }
+
+  //Features
+  keyPress(event: KeyboardEvent): void {
     switch (event.keyCode) {
       case 37:
         this.moveTo(-10);
@@ -72,18 +99,17 @@ class ControlsPlay extends HTMLElement {
     }
   }
 
-  moveTo(secs: number) {
-    this.video.currentTime = this.video.currentTime + secs;
+  moveTo(secs: number): void {
+    this.player_media.currentTime = this.player_media.currentTime + secs;
   }
 
-  togglePlay() {
-    if (this.video.paused) {
+  togglePlay(): void {
+    if (this.player_media.paused) {
       changeIcon(this.btns[1], pauseIcon);
-      this.video.play();
-    }
-    else {
+      this.player_media.play();
+    } else {
       changeIcon(this.btns[1], playIcon);
-      this.video.pause();
+      this.player_media.pause();
     }
   }
 }

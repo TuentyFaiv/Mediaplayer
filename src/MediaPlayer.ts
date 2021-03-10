@@ -1,88 +1,127 @@
+import { changeIcon } from '@utils/globalUtils';
+
+import playerStyles from '@styles/main.scss';
+
+import playIcon from '@icons/initPlay.svg';
+import replayIcon from '@icons/replayVideo.svg';
+
 import Controls from './Controls';
-import { changeIcon } from './utils/globalUtils';
-import playerStyles from './css/main.scss';
-
 import './Controls';
-import playIcon from './icons/initPlay.svg';
-import replayIcon from './icons/replayVideo.svg';
-
-const styles = document.createElement('style');
-styles.type = 'text/css';
-styles.appendChild(document.createTextNode(playerStyles));
-
-const template = document.createElement('template');
-template.innerHTML = `
-  <div class="player_container">
-    <video class="player_video">
-    </video>
-    <tf-player-controls></tf-player-controls>
-    <div class="player_actions">
-      <button title="Play or Replay (Spacebar)">
-        ${playIcon}
-      </button>
-    </div>
-    <div class="loader__container">
-      <div class="loader"><div></div><div></div><div></div><div></div></div>
-    </div>
-  </div>
-`;
 
 class MediaPlayer extends HTMLElement {
-  container: HTMLElement;
-  media: HTMLVideoElement;
-  controls: Controls;
-  actions: HTMLElement;
-  loading: HTMLElement;
+  player_controls: Controls;
+  player_media: HTMLVideoElement;
+  player_actions: HTMLButtonElement;
+  player_loading: HTMLDivElement;
+  //Attributes
+  player_src: string;
+  player_poster: null | string;
+  player_share: string;
+  player_title: string;
+  player_width: string;
+  player_height: string;
+  player_background: string;
 
+  //Life cycle
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild(styles.cloneNode(true));
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
 
-    this.container = this.shadowRoot.querySelector('.player_container');
-    this.media = this.shadowRoot.querySelector('.player_video');
-    this.controls = this.shadowRoot.querySelector('tf-player-controls');
-    this.actions = this.shadowRoot.querySelector('.player_actions button');
-    this.loading = this.shadowRoot.querySelector('.loader__container');
+    this.player_poster = null;
+    this.player_title = '';
+    this.player_share = 'true';
+    this.player_width = '100%';
+    this.player_height = '540px';
+    this.player_background = '#040306';
+  }
 
-    this.container.style.width = this.getAttribute('w') || '100%';
-    this.container.style.height = this.getAttribute('h') || '540px';
+  static get observedAttributes(): string[] {
+    return [
+      'player_src',
+      'player_poster',
+      'player_share',
+      'player_title',
+      'player_width',
+      'player_height',
+      'player_background'
+    ];
+  }
 
-    this.media.style.background = this.getAttribute('bg') || "#040306";
-    this.media.setAttribute('src', this.getAttribute('src'));
+  attributeChangedCallback(attr, oldAttr, newAttr): void {
+    this[attr] = newAttr;
+  }
 
-    if (this.getAttribute('poster')) {
-      this.media.poster = this.getAttribute('poster');
-    }
+  getTemplate(): HTMLTemplateElement {
+    const template = document.createElement('template');
+    template.innerHTML = `
+      ${this.getStyles()}
+      <div class="player_container">
+        <video class="player_video" src=${this.player_src} poster=${this.player_poster}></video>
+        <tf-player-controls
+          player_title="${this.player_title}"
+          player_share="${this.player_share}"
+          player_width="${this.player_width}"
+          player_height="${this.player_height}"
+          player_background="${this.player_background}"
+        ></tf-player-controls>
+        <div class="player_actions">
+          <button title="Play or Replay (Spacebar)">${playIcon}</button>
+        </div>
+        <div class="loader__container">
+          <div class="loader"><div></div><div></div><div></div><div></div></div>
+        </div>
+      </div>
+    `;
 
-    this.controls.title = this.getAttribute('titleText') || "";
-    this.controls.media = this.media;
-    this.controls.share = this.getAttribute('share');
-    this.controls.styles = {
-      width: this.container.style.width,
-      height: this.container.style.height,
-      background: this.media.style.background,
-    };
+    return template;
+  }
 
-    this.actions.removeChild(this.actions.firstChild);
+  getStyles(): string {
+    return `
+      <style type="text/css">
+        :host {
+          --player-width: ${this.player_width};
+          --player-height: ${this.player_height};
+          --player-background: ${this.player_background};
+        }
+        ${playerStyles}
+      </style>
+    `;
+  }
 
-    this.actions.onclick = () => this.initialPlay();
+  render(): void {
+    this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
-    this.media.onloadedmetadata = (event) => this.loadedMetaData(event);
-    this.media.ontimeupdate = (event) => this.timeUpdate(event);
-    this.media.onseeking = () => this.seeking();
-    this.media.onseeked = () => this.seeked();
-    this.media.onended = () => this.ended();
+    this.player_media = this.shadowRoot.querySelector('video.player_video');
+    this.player_controls = this.shadowRoot.querySelector('tf-player-controls');
+    this.player_actions = this.shadowRoot.querySelector('.player_actions button');
+    this.player_loading = this.shadowRoot.querySelector('.loader__container');
+
+    this.player_controls.media = this.player_media;
+
+    this.player_actions.removeChild(this.player_actions.firstChild);
+
+    this.player_actions.onclick = () => this.initialPlay();
+
+    this.player_media.onloadedmetadata = (event) => this.loadedMetaData(event);
+    this.player_media.ontimeupdate = (event) => this.timeUpdate(event);
+    this.player_media.onseeking = () => this.seeking();
+    this.player_media.onseeked = () => this.seeked();
+    this.player_media.onended = () => this.ended();
     document.addEventListener('keydown', this.keyPress.bind(this));
   }
 
-  keyPress(event: any) {
+  connectedCallback(): void {
+    this.render();
+  }
+
+  //Features
+  keyPress(event): void {
     switch (event.keyCode) {
       case 32:
-        if (this.media.currentTime === this.media.duration) {
+        if (this.player_media.currentTime === this.player_media.duration) {
           this.ended();
-        } else if (this.media.currentTime === 0) {
+        } else if (this.player_media.currentTime === 0) {
           this.initialPlay();
         }
         break;
@@ -91,62 +130,62 @@ class MediaPlayer extends HTMLElement {
     }
   }
 
-  initialPlay() {
-    this.media.play();
-    this.actions.parentElement.classList.add('hide');
+  initialPlay(): void {
+    this.player_media.play();
+    this.player_actions.parentElement.classList.add('hide');
   }
 
-  leftPad(number: string) {
+  pad(number: string): string {
     const pad = "00";
     return pad.substring(0, pad.length - number.length) + number;
   }
 
-  formatTime(seconds: number) {
-    const minN = parseInt(seconds.toString(), 10);
-    const secsT = parseFloat(seconds.toString()).toFixed(2);
+  formatTime(seconds: number): string {
+    const secondsInt = parseInt(seconds.toString(), 10);
+    const secondsFloat = parseFloat(seconds.toString()).toFixed(2);
+    
+    const minutes = secondsInt / 60;
+    const minutesInt = parseInt(minutes.toString(), 10);
+    const secondsTotal = parseInt(secondsFloat) % 60;
 
-    const minT = minN / 60;
-    const min = parseInt(minT.toString(), 10);
-    const secs = parseInt(secsT) % 60;
-
-    return `${this.leftPad(min.toString())}:${this.leftPad(secs.toString())}`;
+    return `${this.pad(minutesInt.toString())}:${this.pad(secondsTotal.toString())}`;
   }
 
-  loadedMetaData(event: any) {
-    const video = event.target;
+  loadedMetaData(event): void {
+    const video: HTMLVideoElement = event.target;
     const formatedDuration = this.formatTime(video.duration);
 
-    this.controls.time = {
-      timeText: formatedDuration,
-      time: video.duration,
+    this.player_controls.duration = {
+      timeNumber: video.duration,
+      timeText: formatedDuration
     };
   }
 
-  timeUpdate(event: any) {
+  timeUpdate(event): void {
     const video: HTMLVideoElement = event.target;
     const formatedCurrentTime = this.formatTime(video.currentTime);
 
-    this.controls.current = {
-      timeText: formatedCurrentTime,
-      time: video.currentTime,
+    this.player_controls.current = {
+      timeNumber: video.currentTime,
+      timeText: formatedCurrentTime
     };
   }
 
-  seeking() {
-    this.loading.style.display = 'grid';
+  seeking(): void {
+    this.player_loading.style.display = 'grid';
   }
 
-  seeked() {
-    this.loading.style.display = 'none';
+  seeked(): void {
+    this.player_loading.style.display = 'none';
   }
 
-  ended() {
-    this.actions.parentElement.classList.remove('hide');
-    changeIcon(this.actions, replayIcon);
-    this.actions.onclick = () => {
-      this.actions.parentElement.classList.add('hide');
-      this.media.currentTime = 0;
-      this.media.play();
+  ended(): void {
+    this.player_actions.parentElement.classList.remove('hide');
+    changeIcon(this.player_actions, replayIcon);
+    this.player_actions.onclick = () => {
+      this.player_actions.parentElement.classList.add('hide');
+      this.player_media.currentTime = 0;
+      this.player_media.play();
     };
   }
 }

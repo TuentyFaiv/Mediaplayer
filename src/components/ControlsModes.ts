@@ -1,50 +1,64 @@
-import { changeIcon } from '../utils/globalUtils';
-import { MediaStyles } from '../utils/interfaces';
+import { changeIcon } from '@utils/globalUtils';
 
-import modesStyles from '../css/components/modes.scss';
+import modesStyles from '@styles/components/modes.scss';
 
-import fullscreenIcon from '../icons/fullscreen.svg';
-import fullscreenExitIcon from '../icons/fullscreen_exit.svg';
-import theaterOnIcon from '../icons/theaterOn.svg';
-import theaterOffIcon from '../icons/theaterOff.svg';
-import PinPIcon from '../icons/pinp.svg';
-
-const styles = document.createElement('style');
-styles.type = 'text/css';
-styles.appendChild(document.createTextNode(modesStyles));
-
-const template = document.createElement('template');
-template.innerHTML = `
-  <button title="Picture in picture (p)">
-    ${PinPIcon}
-  </button>
-  <button title="Theater mode (t)">
-    ${theaterOnIcon}
-  </button>
-  <button title="Fullscreen (f)">
-    ${fullscreenIcon}
-  </button>
-`;
+import fullscreenIcon from '@icons/fullscreen.svg';
+import fullscreenExitIcon from '@icons/fullscreen_exit.svg';
+import theaterOnIcon from '@icons/theaterOn.svg';
+import theaterOffIcon from '@icons/theaterOff.svg';
+import PinPIcon from '@icons/pinp.svg';
 
 class ControlsModes extends HTMLElement {
-  btns: any;
-  video: any;
+  btns: NodeListOf<HTMLButtonElement>;
   teatherState: boolean;
-  videoStyles: MediaStyles;
+  //Attributes
+  player_media: any;
+  player_width: string;
+  player_height: string;
+  player_background: string;
 
   set media(media: HTMLVideoElement) {
-    this.video = media;
+    this.player_media = media;
   }
 
-  set styles(styles: MediaStyles) {
-    this.videoStyles = styles;
-  }
-
+  //Life cycle
   constructor() {
     super();
     this.attachShadow({ mode: 'open' });
-    this.shadowRoot.appendChild(styles.cloneNode(true));
-    this.shadowRoot.appendChild(template.content.cloneNode(true));
+    this.teatherState = false;
+  }
+
+  static get observedAttributes(): string[] {
+    return ['player_media', 'player_width', 'player_height', 'player_background'];
+  }
+
+  attributeChangedCallback(attr, oldAttr, newAttr): void {
+    this[attr] = newAttr;
+  }
+
+  getTemplate(): HTMLTemplateElement {
+    const template = document.createElement('template');
+    template.innerHTML = `
+      ${this.getStyles()}
+      <button title="Picture in picture (p)">${PinPIcon}</button>
+      <button title="Theater mode (t)">${theaterOnIcon}</button>
+      <button title="Fullscreen (f)">${fullscreenIcon}</button>
+    `;
+
+    return template;
+  }
+
+  getStyles(): string {
+    return `
+      <style type="text/css">
+        :host {}
+        ${modesStyles}
+      </style>
+    `;
+  }
+
+  render(): void {
+    this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
     this.btns = this.shadowRoot.querySelectorAll('button');
     this.btns.forEach((element: HTMLElement) => {
@@ -59,11 +73,15 @@ class ControlsModes extends HTMLElement {
     this.btns[1].onclick = () => this.toggleTeatherMode();
     this.btns[2].onclick = () => this.toggleFullScreen();
 
-    this.teatherState = false;
     document.addEventListener('keydown', this.keyPress.bind(this));
   }
 
-  keyPress(event: KeyboardEvent) {
+  connectedCallback(): void {
+    this.render();
+  }
+
+  //Attributes
+  keyPress(event: KeyboardEvent): void {
     switch (event.keyCode) {
       case 70:
         this.toggleFullScreen();
@@ -79,43 +97,43 @@ class ControlsModes extends HTMLElement {
     }
   }
 
-  setPinP() {
+  setPinP(): void {
     if (!('pictureInPictureEnabled' in document)) {
       this.btns[0].style.display = 'none';
     } else {
-      this.video.requestPictureInPicture();
+      this.player_media.requestPictureInPicture();
     }
   }
 
-  toggleFullScreen() {
+  toggleFullScreen(): void {
     if (document.fullscreenElement) {
       document.exitFullscreen();
       changeIcon(this.btns[2], fullscreenIcon);
     } else {
-      this.video.parentElement.requestFullscreen();
+      this.player_media.parentElement.requestFullscreen();
       changeIcon(this.btns[2], fullscreenExitIcon);
     }
   }
 
-  toggleTeatherMode() {
+  toggleTeatherMode(): void {
     if (this.teatherState) {
-      this.video.parentElement.style.position = 'relative';
-      this.video.parentElement.style.width = this.videoStyles.width;
-      this.video.parentElement.style.height = this.videoStyles.height;
-      this.video.parentElement.style.top = '';
-      this.video.parentElement.style.left = '';
-      this.video.parentElement.style.right = '';
-      this.video.style.background = this.videoStyles.background;
+      this.player_media.parentElement.style.position = 'relative';
+      this.player_media.parentElement.style.width = this.player_width;
+      this.player_media.parentElement.style.height = this.player_height;
+      this.player_media.parentElement.style.top = '';
+      this.player_media.parentElement.style.left = '';
+      this.player_media.parentElement.style.right = '';
+      this.player_media.style.background = this.player_background;
       changeIcon(this.btns[1], theaterOnIcon);
       this.teatherState = false;
     } else {
-      this.video.parentElement.style.position = 'absolute';
-      this.video.parentElement.style.width = '100%';
-      this.video.parentElement.style.height = '80vh';
-      this.video.parentElement.style.top = '0';
-      this.video.parentElement.style.left = '0';
-      this.video.parentElement.style.right = '0';
-      this.video.style.background = '#040306';
+      this.player_media.parentElement.style.position = 'absolute';
+      this.player_media.parentElement.style.width = '100%';
+      this.player_media.parentElement.style.height = '80vh';
+      this.player_media.parentElement.style.top = '0';
+      this.player_media.parentElement.style.left = '0';
+      this.player_media.parentElement.style.right = '0';
+      this.player_media.style.background = this.player_background;
       changeIcon(this.btns[1], theaterOffIcon);
       this.teatherState = true;
     }
