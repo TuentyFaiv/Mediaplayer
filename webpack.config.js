@@ -12,13 +12,20 @@ module.exports = {
     crossOriginLoading: 'anonymous'
   },
   devServer: {
-    contentBase: path.join(__dirname, 'lib'),
+    static: {
+      directory: path.join(__dirname, 'lib'),
+      publicPath: '/',
+    },
+    client: {
+      logging: "info",
+      overlay: {
+        errors: true,
+        warnings: false
+      }
+    },
+    compress: true,
     port: 4000,
     hot: true,
-    publicPath: '/',
-    stats: {
-      colors: true
-    },
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",

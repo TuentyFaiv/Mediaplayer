@@ -7,7 +7,7 @@
       "ESNext",
       "ES6"
     ],
-    "allowJs": true,
+    "allowJs": false,
     "sourceMap": true,
     "outDir": "./lib",
     "removeComments": true,
