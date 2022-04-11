@@ -1,4 +1,4 @@
-import timeTextStyles from '@styles/components/textTime.scss';
+import timeTextStyles from "@styles/components/textTime.scss";
 
 class ControlsTimeText extends HTMLElement {
   currentText: HTMLSpanElement;
@@ -20,13 +20,13 @@ class ControlsTimeText extends HTMLElement {
   //Life cycle
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
-    this.player_duration_text = '00:00';
-    this.player_current_text = '00:00';
+    this.attachShadow({ mode: "open" });
+    this.player_duration_text = "00:00";
+    this.player_current_text = "00:00";
   }
 
   static get observedAttributes(): string[] {
-    return ['player_duration_text', 'player_current_text'];
+    return ["player_duration_text", "player_current_text"];
   }
 
   attributeChangedCallback(attr, oldAttr, newAttr): void {
@@ -34,7 +34,7 @@ class ControlsTimeText extends HTMLElement {
   }
 
   getTemplate(): HTMLTemplateElement {
-    const template = document.createElement('template');
+    const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
       <span id="currentText">${this.player_current_text}</span>
@@ -57,8 +57,8 @@ class ControlsTimeText extends HTMLElement {
   render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
-    this.currentText = this.shadowRoot.querySelector('span#currentText');
-    this.durationText = this.shadowRoot.querySelector('span#durationText');
+    this.currentText = this.shadowRoot.querySelector("span#currentText");
+    this.durationText = this.shadowRoot.querySelector("span#durationText");
   }
 
   connectedCallback(): void {
@@ -66,5 +66,5 @@ class ControlsTimeText extends HTMLElement {
   }
 }
 
-customElements.define('tf-controls-time-text', ControlsTimeText);
+customElements.define("tf-controls-time-text", ControlsTimeText);
 export default ControlsTimeText;

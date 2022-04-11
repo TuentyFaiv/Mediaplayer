@@ -1,12 +1,12 @@
-import { changeIcon } from '@utils/globalUtils';
+import { changeIcon } from "@utils";
 
-import playerStyles from '@styles/main.scss';
+import playerStyles from "@styles/main.scss";
 
-import playIcon from '@icons/initPlay.svg';
-import replayIcon from '@icons/replayVideo.svg';
+import playIcon from "@icons/initPlay.svg";
+import replayIcon from "@icons/replayVideo.svg";
 
-import Controls from './Controls';
-import './Controls';
+import Controls from "./Controls";
+import "./Controls";
 
 class MediaPlayer extends HTMLElement {
   player_controls: Controls;
@@ -25,25 +25,25 @@ class MediaPlayer extends HTMLElement {
   //Life cycle
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
 
     this.player_poster = null;
-    this.player_title = '';
-    this.player_share = 'true';
-    this.player_width = '100%';
-    this.player_height = '540px';
-    this.player_background = '#040306';
+    this.player_title = "";
+    this.player_share = "true";
+    this.player_width = "100%";
+    this.player_height = "540px";
+    this.player_background = "#040306";
   }
 
   static get observedAttributes(): string[] {
     return [
-      'player_src',
-      'player_poster',
-      'player_share',
-      'player_title',
-      'player_width',
-      'player_height',
-      'player_background'
+      "player_src",
+      "player_poster",
+      "player_share",
+      "player_title",
+      "player_width",
+      "player_height",
+      "player_background"
     ];
   }
 
@@ -52,7 +52,7 @@ class MediaPlayer extends HTMLElement {
   }
 
   getTemplate(): HTMLTemplateElement {
-    const template = document.createElement('template');
+    const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
       <div class="player_container">
@@ -92,10 +92,10 @@ class MediaPlayer extends HTMLElement {
   render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
-    this.player_media = this.shadowRoot.querySelector('video.player_video');
-    this.player_controls = this.shadowRoot.querySelector('tf-player-controls');
-    this.player_actions = this.shadowRoot.querySelector('.player_actions button');
-    this.player_loading = this.shadowRoot.querySelector('.loader__container');
+    this.player_media = this.shadowRoot.querySelector("video.player_video");
+    this.player_controls = this.shadowRoot.querySelector("tf-player-controls");
+    this.player_actions = this.shadowRoot.querySelector(".player_actions button");
+    this.player_loading = this.shadowRoot.querySelector(".loader__container");
 
     this.player_controls.media = this.player_media;
 
@@ -108,7 +108,7 @@ class MediaPlayer extends HTMLElement {
     this.player_media.onseeking = () => this.seeking();
     this.player_media.onseeked = () => this.seeked();
     this.player_media.onended = () => this.ended();
-    document.addEventListener('keydown', this.keyPress.bind(this));
+    document.addEventListener("keydown", this.keyPress.bind(this));
   }
 
   connectedCallback(): void {
@@ -132,7 +132,7 @@ class MediaPlayer extends HTMLElement {
 
   initialPlay(): void {
     this.player_media.play();
-    this.player_actions.parentElement.classList.add('hide');
+    this.player_actions.parentElement.classList.add("hide");
   }
 
   pad(number: string): string {
@@ -172,22 +172,22 @@ class MediaPlayer extends HTMLElement {
   }
 
   seeking(): void {
-    this.player_loading.style.display = 'grid';
+    this.player_loading.style.display = "grid";
   }
 
   seeked(): void {
-    this.player_loading.style.display = 'none';
+    this.player_loading.style.display = "none";
   }
 
   ended(): void {
-    this.player_actions.parentElement.classList.remove('hide');
+    this.player_actions.parentElement.classList.remove("hide");
     changeIcon(this.player_actions, replayIcon);
     this.player_actions.onclick = () => {
-      this.player_actions.parentElement.classList.add('hide');
+      this.player_actions.parentElement.classList.add("hide");
       this.player_media.currentTime = 0;
       this.player_media.play();
     };
   }
 }
 
-customElements.define('tf-player', MediaPlayer);
+customElements.define("tf-player", MediaPlayer);

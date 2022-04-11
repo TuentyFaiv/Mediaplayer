@@ -1,10 +1,10 @@
-import { changeIcon } from '@utils/globalUtils';
-import controlsPlayStyles from '@styles/components/play.scss';
+import { changeIcon } from "@utils";
+import controlsPlayStyles from "@styles/components/play.scss";
 
-import playIcon from '@icons/play.svg';
-import pauseIcon from '@icons/pause.svg';
-import forwardIcon from '@icons/forward.svg';
-import replayIcon from '@icons/replay.svg';
+import playIcon from "@icons/play.svg";
+import pauseIcon from "@icons/pause.svg";
+import forwardIcon from "@icons/forward.svg";
+import replayIcon from "@icons/replay.svg";
 
 class ControlsPlay extends HTMLElement {
   btns: NodeListOf<HTMLButtonElement>;
@@ -22,11 +22,11 @@ class ControlsPlay extends HTMLElement {
   //Life cycle
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
   }
 
   static get observedAttributes(): string[] {
-    return ['player_media'];
+    return ["player_media"];
   }
 
   attributeChangedCallback(attr, oldAttr, newAttr): void {
@@ -34,7 +34,7 @@ class ControlsPlay extends HTMLElement {
   }
 
   getTemplate(): HTMLTemplateElement {
-    const template = document.createElement('template');
+    const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
       <div id="divPlay">
@@ -65,8 +65,8 @@ class ControlsPlay extends HTMLElement {
   render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
-    this.playbox = this.shadowRoot.querySelector('#divPlay');
-    this.btns = this.shadowRoot.querySelectorAll('button');
+    this.playbox = this.shadowRoot.querySelector("#divPlay");
+    this.btns = this.shadowRoot.querySelectorAll("button");
     this.btns.forEach((element: HTMLButtonElement) => {
       element.removeChild(element.firstChild);
     });
@@ -75,7 +75,7 @@ class ControlsPlay extends HTMLElement {
     this.btns[1].onclick = () => this.togglePlay();
     this.btns[0].onclick = () => this.moveTo(-10);
     this.btns[2].onclick = () => this.moveTo(10);
-    document.addEventListener('keydown', this.keyPress.bind(this));
+    document.addEventListener("keydown", this.keyPress.bind(this));
   }
 
   connectedCallback(): void {
@@ -114,5 +114,5 @@ class ControlsPlay extends HTMLElement {
   }
 }
 
-customElements.define('tf-controls-play', ControlsPlay);
+customElements.define("tf-controls-play", ControlsPlay);
 export default ControlsPlay;

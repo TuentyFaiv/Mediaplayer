@@ -1,15 +1,15 @@
-import { MediaTime } from '@interfaces';
-import controlsStyles from '@styles/controls.scss';
+import { MediaTime } from "@interfaces";
+import controlsStyles from "@styles/controls.scss";
 
-import '@components/ControlsHeader';
-import ControlsPlay from '@components/ControlsPlay';
-import '@components/ControlsPlay';
-import ControlsTimeText from '@components/ControlsTimeText';
-import '@components/ControlsTimeText';
-import ControlsSound from '@components/ControlsSound';
-import '@components/ControlsSound';
-import ControlsModes from '@components/ControlsModes';
-import '@components/ControlsModes';
+import "@components/ControlsHeader";
+import ControlsPlay from "@components/ControlsPlay";
+import "@components/ControlsPlay";
+import ControlsTimeText from "@components/ControlsTimeText";
+import "@components/ControlsTimeText";
+import ControlsSound from "@components/ControlsSound";
+import "@components/ControlsSound";
+import ControlsModes from "@components/ControlsModes";
+import "@components/ControlsModes";
 
 class Controls extends HTMLElement {
   controls_play: ControlsPlay;
@@ -39,6 +39,7 @@ class Controls extends HTMLElement {
     this.controls_play.media = this.player_media;
     this.controls_modes.media = this.player_media;
   }
+
   set duration(duration: MediaTime) {
     this.player_duration_text = duration.timeText;
     this.controls_timeText.duration = this.player_duration_text;
@@ -62,29 +63,29 @@ class Controls extends HTMLElement {
   //Life cycle
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
     this.player_current = 0;
   }
 
   static get observedAttributes(): string[] {
     return [
-      'player_media',
-      'player_title',
-      'player_share',
-      'player_width',
-      'player_height',
-      'player_background',
-      'duration',
-      'current'
+      "player_media",
+      "player_title",
+      "player_share",
+      "player_width",
+      "player_height",
+      "player_background",
+      "duration",
+      "current"
     ];
   }
 
   attributeChangedCallback(attr, oldAttr, newAttr): void {
     this[attr] = newAttr;
-  };
+  }
 
   getTemplate(): HTMLTemplateElement {
-    const template = document.createElement('template');
+    const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
       <div class="player_controls" tabindex="0">
@@ -134,30 +135,30 @@ class Controls extends HTMLElement {
   render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
-    this.container = this.shadowRoot.querySelector('.player_controls');
-    this.durationInput = this.shadowRoot.querySelector('input#timeInput');
-    this.controls_play = this.shadowRoot.querySelector('tf-controls-play');
-    this.controls_timeText = this.shadowRoot.querySelector('tf-controls-time-text');
-    this.controls_sound = this.shadowRoot.querySelector('tf-controls-sound');
-    this.controls_modes = this.shadowRoot.querySelector('tf-controls-modes');
+    this.container = this.shadowRoot.querySelector(".player_controls");
+    this.durationInput = this.shadowRoot.querySelector("input#timeInput");
+    this.controls_play = this.shadowRoot.querySelector("tf-controls-play");
+    this.controls_timeText = this.shadowRoot.querySelector("tf-controls-time-text");
+    this.controls_sound = this.shadowRoot.querySelector("tf-controls-sound");
+    this.controls_modes = this.shadowRoot.querySelector("tf-controls-modes");
 
-    this.playedEl = this.shadowRoot.querySelector('.player_played');
-    this.bufferedEl = this.shadowRoot.querySelector('.player_buffered');
+    this.playedEl = this.shadowRoot.querySelector(".player_played");
+    this.bufferedEl = this.shadowRoot.querySelector(".player_buffered");
 
-    this.durationInput.onchange = (event: any) => this.updateProgress(event);
-    this.durationInput.oninput = (event: any) => this.updateProgress(event);
+    this.durationInput.onchange = this.updateProgress;
+    this.durationInput.oninput = this.updateProgress;
 
     this.container.onmousemove = () => {
       this.showControls();
-    }
+    };
     this.container.onmouseenter = (event) => {
       this.showControls();
       this.hideControls(event);
-    }
+    };
     this.container.onmouseover = (event) => {
       this.showControls();
       this.hideControls(event);
-    }
+    };
   }
 
   connectedCallback(): void {
@@ -166,8 +167,8 @@ class Controls extends HTMLElement {
 
   //Features
   showControls(): void {
-    this.container.style.opacity = '1';
-    this.container.style.cursor = 'auto';
+    this.container.style.opacity = "1";
+    this.container.style.cursor = "auto";
   }
 
   hideControls(event: MouseEvent): void {
@@ -176,18 +177,21 @@ class Controls extends HTMLElement {
     const moveY = event.movementY;
     if ((moveX === 0 && moveY === 0)) {
       timeout = setTimeout(() => {
-        this.container.style.opacity = '0';
-        this.container.style.cursor = 'none';
+        this.container.style.opacity = "0";
+        this.container.style.cursor = "none";
       }, 4000);
     }
   }
 
-  updateProgress(event: any): void {
-    this.player_media.currentTime = event.target.value;
-    this.updateTime(event.target.value);
+  updateProgress = (event: Event): void => {
+    const target = event.target as HTMLInputElement;
+    const value = parseFloat(target.value);
+    console.log({ value });
+    this.player_media.currentTime = value;
+    this.updateTime(value);
 
     this.buffered = this.player_media.buffered.end(this.player_media.buffered.length - 1);
-  }
+  };
 
   updateTime(time: number): void {
     const widthPlayedEl: number = (time * 100) / this.player_duration;
@@ -198,5 +202,5 @@ class Controls extends HTMLElement {
   }
 }
 
-customElements.define('tf-player-controls', Controls);
+customElements.define("tf-player-controls", Controls);
 export default Controls;

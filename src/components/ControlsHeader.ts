@@ -1,6 +1,7 @@
-import controlsHeaderStyles from '@styles/components/header.scss';
+/* eslint-disable max-len */
+import controlsHeaderStyles from "@styles/components/header.scss";
 
-import shareIcon from '@icons/share.svg';
+import shareIcon from "@icons/share.svg";
 
 class ControlsHeader extends HTMLElement {
   container: HTMLDivElement;
@@ -16,12 +17,12 @@ class ControlsHeader extends HTMLElement {
   //Life cycle
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
     this.modal = false;
   }
 
   static get observedAttributes(): string[] {
-    return ['player_title', 'player_share'];
+    return ["player_title", "player_share"];
   }
 
   attributeChangedCallback(attr, oldAttr, newAttr): void {
@@ -29,7 +30,7 @@ class ControlsHeader extends HTMLElement {
   }
 
   getTemplate(): HTMLTemplateElement {
-    const template = document.createElement('template');
+    const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
       <h1>${this.player_title}</h1>
@@ -37,8 +38,8 @@ class ControlsHeader extends HTMLElement {
         <button
           id="share"
           title="Share"
-          style="${this.player_share === 'false' ? 'display: none;' : 'display: block;'}"
-          ${this.player_share === 'false' ? 'disabled="true"' : ''}
+          style="${this.player_share === "false" ? "display: none;" : "display: block;"}"
+          ${this.player_share === "false" ? "disabled=\"true\"" : ""}
         >
           ${shareIcon}
         </button>
@@ -63,9 +64,9 @@ class ControlsHeader extends HTMLElement {
   render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
-    this.container = this.shadowRoot.querySelector('.player_controls-share');
-    this.btnShare = this.shadowRoot.querySelector('button#share');
-    this.modalShare = this.shadowRoot.getElementById('modalShare');
+    this.container = this.shadowRoot.querySelector(".player_controls-share");
+    this.btnShare = this.shadowRoot.querySelector("button#share");
+    this.modalShare = this.shadowRoot.getElementById("modalShare");
 
     this.share_url = document.location.href;
 
@@ -99,11 +100,11 @@ class ControlsHeader extends HTMLElement {
   //Features
   toggleModal(): void {
     if (this.modal === false) {
-      this.modalShare.style.display = 'flex';
-      this.btnShare.style.marginLeft = '1.5em';
+      this.modalShare.style.display = "flex";
+      this.btnShare.style.marginLeft = "1.5em";
     } else {
-      this.modalShare.style.display = 'none';
-      this.btnShare.style.marginLeft = '0';
+      this.modalShare.style.display = "none";
+      this.btnShare.style.marginLeft = "0";
     }
     this.modal = !this.modal;
   }
@@ -115,7 +116,7 @@ class ControlsHeader extends HTMLElement {
 
   removeModalContent(time: number): void {
     setTimeout(() => {
-      this.modalShare.innerHTML = '';
+      this.modalShare.innerHTML = "";
     }, time);
   }
 
@@ -125,10 +126,10 @@ class ControlsHeader extends HTMLElement {
         this.addModalContent(`Enlace copiado: ${this.share_url}`);
         this.removeModalContent(2000);
       }, () => {
-        this.addModalContent('Error al compartir');
+        this.addModalContent("Error al compartir");
         this.removeModalContent(2000);
       });
-    }
+    };
     this.addModalContent(`
       <div tabindex="0" title="Share by Twitter">
         <a
@@ -164,7 +165,7 @@ class ControlsHeader extends HTMLElement {
         </svg>
       </div>
     `);
-    this.iconsShare = this.shadowRoot.querySelectorAll('.icon');
+    this.iconsShare = this.shadowRoot.querySelectorAll(".icon");
     this.iconsShare[0].onclick = () => {
       this.removeModalContent(3000);
       this.toggleModal();
@@ -182,11 +183,11 @@ class ControlsHeader extends HTMLElement {
   shareVideoByNavigator(): void {
     navigator.share({
       title: this.player_title,
-      text: '',
-      url: this.share_url,
+      text: "",
+      url: this.share_url
     })
-      .catch((error) => {
-        this.addModalContent('Error al compartir');
+      .catch(() => {
+        this.addModalContent("Error al compartir");
         setTimeout(() => {
           this.toggleModal();
         }, 3000);
@@ -195,4 +196,4 @@ class ControlsHeader extends HTMLElement {
   }
 }
 
-customElements.define('tf-controls-header', ControlsHeader);
+customElements.define("tf-controls-header", ControlsHeader);
