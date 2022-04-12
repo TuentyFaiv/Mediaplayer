@@ -7,12 +7,15 @@ import replayIcon from "@icons/replayVideo.svg";
 
 import Controls from "./Controls";
 import "./Controls";
+import { ReadyStateMedia } from "@interfaces";
 
 class MediaPlayer extends HTMLElement {
-  player_controls: Controls;
-  player_media: HTMLVideoElement;
-  player_actions: HTMLButtonElement;
-  player_loading: HTMLDivElement;
+  private nodeCloned: Node;
+  protected player_controls: Controls;
+  protected player_media: HTMLVideoElement;
+  protected player_actions: HTMLButtonElement;
+  protected player_loading: HTMLDivElement;
+  protected buffered: number;
   //Attributes
   player_src: string;
   player_poster: null | string;
@@ -49,9 +52,10 @@ class MediaPlayer extends HTMLElement {
 
   attributeChangedCallback(attr, oldAttr, newAttr): void {
     this[attr] = newAttr;
+    this.render();
   }
 
-  getTemplate(): HTMLTemplateElement {
+  protected getTemplate(): HTMLTemplateElement {
     const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
@@ -76,7 +80,7 @@ class MediaPlayer extends HTMLElement {
     return template;
   }
 
-  getStyles(): string {
+  protected getStyles(): string {
     return `
       <style type="text/css">
         :host {
@@ -89,8 +93,10 @@ class MediaPlayer extends HTMLElement {
     `;
   }
 
-  render(): void {
-    this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
+  protected render(): void {
+    this.shadowRoot.innerHTML = "";
+    this.nodeCloned = this.getTemplate().content.cloneNode(true);
+    this.shadowRoot.appendChild(this.nodeCloned);
 
     this.player_media = this.shadowRoot.querySelector("video.player_video");
     this.player_controls = this.shadowRoot.querySelector("tf-player-controls");
@@ -103,8 +109,9 @@ class MediaPlayer extends HTMLElement {
 
     this.player_actions.onclick = () => this.initialPlay();
 
-    this.player_media.onloadedmetadata = (event) => this.loadedMetaData(event);
-    this.player_media.ontimeupdate = (event) => this.timeUpdate(event);
+    this.player_media.onloadedmetadata = this.loadedMetaData;
+    this.player_media.ontimeupdate = () => this.timeUpdate();
+    this.player_media.onprogress = () => this.timeUpdate();
     this.player_media.onseeking = () => this.seeking();
     this.player_media.onseeked = () => this.seeked();
     this.player_media.onended = () => this.ended();
@@ -116,10 +123,10 @@ class MediaPlayer extends HTMLElement {
   }
 
   //Features
-  keyPress(event): void {
+  protected keyPress(event): void {
     switch (event.keyCode) {
       case 32:
-        if (this.player_media.currentTime === this.player_media.duration) {
+        if (this.player_media.ended) {
           this.ended();
         } else if (this.player_media.currentTime === 0) {
           this.initialPlay();
@@ -130,63 +137,62 @@ class MediaPlayer extends HTMLElement {
     }
   }
 
-  initialPlay(): void {
+  protected initialPlay(): void {
+    this.player_media.currentTime = 0;
     this.player_media.play();
     this.player_actions.parentElement.classList.add("hide");
   }
 
-  pad(number: string): string {
-    const pad = "00";
-    return pad.substring(0, pad.length - number.length) + number;
+  protected formatTime(seconds: string): string {
+    const secondsInt = parseInt(seconds, 10);
+    const secondsFloat = parseFloat(seconds).toFixed(2);
+
+    const minutes = (secondsInt / 60).toString();
+    const minutesInt = parseInt(minutes, 10).toString();
+    const secondsTotal = (parseInt(secondsFloat) % 60).toString();
+
+    return `${minutesInt.padStart(2, "0")}:${secondsTotal.padStart(2, "0")}`;
   }
 
-  formatTime(seconds: number): string {
-    const secondsInt = parseInt(seconds.toString(), 10);
-    const secondsFloat = parseFloat(seconds.toString()).toFixed(2);
-    
-    const minutes = secondsInt / 60;
-    const minutesInt = parseInt(minutes.toString(), 10);
-    const secondsTotal = parseInt(secondsFloat) % 60;
-
-    return `${this.pad(minutesInt.toString())}:${this.pad(secondsTotal.toString())}`;
-  }
-
-  loadedMetaData(event): void {
+  protected loadedMetaData = (event): void => {
     const video: HTMLVideoElement = event.target;
-    const formatedDuration = this.formatTime(video.duration);
+    const formatedDuration = this.formatTime(video.duration.toString());
 
     this.player_controls.duration = {
       timeNumber: video.duration,
       timeText: formatedDuration
     };
-  }
+  };
 
-  timeUpdate(event): void {
-    const video: HTMLVideoElement = event.target;
-    const formatedCurrentTime = this.formatTime(video.currentTime);
+  protected timeUpdate = (): void => {
+    const video = this.player_media;
+    const formatedCurrentTime = this.formatTime(video.currentTime.toString());
+
+    if (
+      video.readyState === ReadyStateMedia.HAVE_ENOUGH_DATA
+      && video.buffered.length > 0
+    ) {
+      this.buffered = video.buffered.end(video.buffered.length - 1);
+    }
 
     this.player_controls.current = {
       timeNumber: video.currentTime,
-      timeText: formatedCurrentTime
+      timeText: formatedCurrentTime,
+      buffered: this.buffered
     };
-  }
+  };
 
-  seeking(): void {
+  protected seeking(): void {
     this.player_loading.style.display = "grid";
   }
 
-  seeked(): void {
+  protected seeked(): void {
     this.player_loading.style.display = "none";
   }
 
-  ended(): void {
+  protected ended(): void {
     this.player_actions.parentElement.classList.remove("hide");
     changeIcon(this.player_actions, replayIcon);
-    this.player_actions.onclick = () => {
-      this.player_actions.parentElement.classList.add("hide");
-      this.player_media.currentTime = 0;
-      this.player_media.play();
-    };
   }
 }
 

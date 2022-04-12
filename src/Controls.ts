@@ -12,26 +12,26 @@ import ControlsModes from "@components/ControlsModes";
 import "@components/ControlsModes";
 
 class Controls extends HTMLElement {
-  controls_play: ControlsPlay;
-  controls_timeText: ControlsTimeText;
-  controls_sound: ControlsSound;
-  controls_modes: ControlsModes;
-  durationInput: HTMLInputElement;
-  container: HTMLDivElement;
-  buffered: number;
-  playedEl: HTMLDivElement;
-  bufferedEl: HTMLDivElement;
-  player_background: string;
-  player_duration: number;
-  player_duration_text: string;
-  player_current: number;
-  player_current_text: string;
+  protected controls_play: ControlsPlay;
+  protected controls_timeText: ControlsTimeText;
+  protected controls_sound: ControlsSound;
+  protected controls_modes: ControlsModes;
+  protected durationInput: HTMLInputElement;
+  protected container: HTMLDivElement;
+  protected buffered: number;
+  protected playedEl: HTMLDivElement;
+  protected bufferedEl: HTMLDivElement;
+  protected player_duration: number;
+  protected player_duration_text: string;
+  protected player_current: number;
+  protected player_current_text: string;
   //Attributes
   player_media: HTMLVideoElement;
   player_title: string;
   player_share: string;
   player_width: string;
   player_height: string;
+  player_background: string;
 
   set media(media: HTMLVideoElement) {
     this.player_media = media;
@@ -49,12 +49,8 @@ class Controls extends HTMLElement {
 
   set current(current: MediaTime) {
     this.player_current_text = current.timeText;
-    if (this.player_media.buffered.length === 0) {
-      this.buffered = this.player_media.buffered.end(0);
-    } else {
-      this.buffered = this.player_media.buffered.end(this.player_media.buffered.length - 1);
-    }
     this.controls_timeText.current = this.player_current_text;
+    this.buffered = current.buffered;
     this.updateTime(current.timeNumber);
     this.player_current = current.timeNumber;
     this.durationInput.value = this.player_current.toString();
@@ -84,7 +80,7 @@ class Controls extends HTMLElement {
     this[attr] = newAttr;
   }
 
-  getTemplate(): HTMLTemplateElement {
+  protected getTemplate(): HTMLTemplateElement {
     const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
@@ -102,7 +98,7 @@ class Controls extends HTMLElement {
               min="0"
               value="${this.player_current}"
               max="${this.player_duration}"
-              />
+            />
             <div class="player_played"></div>
             <div class="player_buffered"></div>
           </div>
@@ -123,7 +119,7 @@ class Controls extends HTMLElement {
     return template;
   }
 
-  getStyles(): string {
+  protected getStyles(): string {
     return `
       <style type="text/css">
         :host {}
@@ -132,7 +128,7 @@ class Controls extends HTMLElement {
     `;
   }
 
-  render(): void {
+  protected render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
     this.container = this.shadowRoot.querySelector(".player_controls");
@@ -148,17 +144,17 @@ class Controls extends HTMLElement {
     this.durationInput.onchange = this.updateProgress;
     this.durationInput.oninput = this.updateProgress;
 
-    this.container.onmousemove = () => {
-      this.showControls();
-    };
-    this.container.onmouseenter = (event) => {
-      this.showControls();
-      this.hideControls(event);
-    };
-    this.container.onmouseover = (event) => {
-      this.showControls();
-      this.hideControls(event);
-    };
+    // this.container.onmousemove = () => {
+    //   this.showControls();
+    // };
+    // this.container.onmouseenter = (event) => {
+    //   this.showControls();
+    //   this.hideControls(event);
+    // };
+    // this.container.onmouseover = (event) => {
+    //   this.showControls();
+    //   this.hideControls(event);
+    // };
   }
 
   connectedCallback(): void {
@@ -166,34 +162,31 @@ class Controls extends HTMLElement {
   }
 
   //Features
-  showControls(): void {
-    this.container.style.opacity = "1";
-    this.container.style.cursor = "auto";
-  }
+  // protected showControls(): void {
+  //   this.container.style.opacity = "1";
+  //   this.container.style.cursor = "auto";
+  // }
 
-  hideControls(event: MouseEvent): void {
-    let timeout;
-    const moveX = event.movementX;
-    const moveY = event.movementY;
-    if ((moveX === 0 && moveY === 0)) {
-      timeout = setTimeout(() => {
-        this.container.style.opacity = "0";
-        this.container.style.cursor = "none";
-      }, 4000);
-    }
-  }
+  // protected hideControls(event: MouseEvent): void {
+  //   let timeout;
+  //   const moveX = event.movementX;
+  //   const moveY = event.movementY;
+  //   if ((moveX === 0 && moveY === 0)) {
+  //     timeout = setTimeout(() => {
+  //       this.container.style.opacity = "0";
+  //       this.container.style.cursor = "none";
+  //     }, 4000);
+  //   }
+  // }
 
-  updateProgress = (event: Event): void => {
+  protected updateProgress = (event: Event): void => {
     const target = event.target as HTMLInputElement;
-    const value = parseFloat(target.value);
-    console.log({ value });
+    const value = parseInt(target.value, 10);
     this.player_media.currentTime = value;
     this.updateTime(value);
-
-    this.buffered = this.player_media.buffered.end(this.player_media.buffered.length - 1);
   };
 
-  updateTime(time: number): void {
+  protected updateTime(time: number): void {
     const widthPlayedEl: number = (time * 100) / this.player_duration;
     const widthBuffereddEl: number = (this.buffered * 100) / this.player_duration;
 

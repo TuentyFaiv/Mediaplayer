@@ -7,16 +7,27 @@ import forwardIcon from "@icons/forward.svg";
 import replayIcon from "@icons/replay.svg";
 
 class ControlsPlay extends HTMLElement {
-  btns: NodeListOf<HTMLButtonElement>;
-  playbox: HTMLDivElement;
+  protected btns: NodeListOf<HTMLButtonElement>;
+  protected playbox: HTMLDivElement;
+  protected resizeOberver: ResizeObserver;
   //Attributes
   player_media: HTMLVideoElement;
 
   set media(media: HTMLVideoElement) {
     this.player_media = media;
-    this.playbox.style.top = `calc(-${this.player_media.offsetHeight}px + 90px)`;
-    this.playbox.style.width = `${this.player_media.offsetWidth}px`;
-    this.playbox.style.height = `calc(${this.player_media.offsetHeight}px - 110px)`;
+    if (this.playbox) {
+      this.resizeOberver = !this.resizeOberver ? new ResizeObserver((entries) => {
+        const newSize = entries[0].target;
+        this.playbox.style.top = `calc(-${newSize.clientHeight}px + 90px)`;
+        this.playbox.style.width = `${newSize.clientWidth}px`;
+        this.playbox.style.height = `calc(${newSize.clientHeight}px - 110px)`;
+      }) : this.resizeOberver;
+      this.resizeOberver.observe(this.player_media);
+
+      this.playbox.style.top = `calc(-${this.player_media.clientHeight}px + 90px)`;
+      this.playbox.style.width = `${this.player_media.clientWidth}px`;
+      this.playbox.style.height = `calc(${this.player_media.clientHeight}px - 110px)`;
+    }
   }
 
   //Life cycle
@@ -33,12 +44,11 @@ class ControlsPlay extends HTMLElement {
     this[attr] = newAttr;
   }
 
-  getTemplate(): HTMLTemplateElement {
+  protected getTemplate(): HTMLTemplateElement {
     const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
-      <div id="divPlay">
-      </div>
+      <div id="divPlay"></div>
       <button class="backward" title="Backward 10s (Arrow left)">
         ${replayIcon}
       </button>
@@ -53,7 +63,7 @@ class ControlsPlay extends HTMLElement {
     return template;
   }
 
-  getStyles(): string {
+  protected getStyles(): string {
     return `
       <style type="text/css">
         :host {}
@@ -62,7 +72,7 @@ class ControlsPlay extends HTMLElement {
     `;
   }
 
-  render(): void {
+  protected render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
     this.playbox = this.shadowRoot.querySelector("#divPlay");
@@ -82,8 +92,12 @@ class ControlsPlay extends HTMLElement {
     this.render();
   }
 
+  disconnectedCallback(): void {
+    this.resizeOberver.disconnect();
+  }
+
   //Features
-  keyPress(event: KeyboardEvent): void {
+  protected keyPress(event: KeyboardEvent): void {
     switch (event.keyCode) {
       case 37:
         this.moveTo(-10);
@@ -99,11 +113,11 @@ class ControlsPlay extends HTMLElement {
     }
   }
 
-  moveTo(secs: number): void {
+  protected moveTo(secs: number): void {
     this.player_media.currentTime = this.player_media.currentTime + secs;
   }
 
-  togglePlay(): void {
+  protected togglePlay(): void {
     if (this.player_media.paused) {
       changeIcon(this.btns[1], pauseIcon);
       this.player_media.play();

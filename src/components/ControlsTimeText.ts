@@ -1,8 +1,8 @@
 import timeTextStyles from "@styles/components/textTime.scss";
 
 class ControlsTimeText extends HTMLElement {
-  currentText: HTMLSpanElement;
-  durationText: HTMLSpanElement;
+  protected currentText: HTMLSpanElement;
+  protected durationText: HTMLSpanElement;
   //Attributes
   player_duration_text: string;
   player_current_text: string;
@@ -33,7 +33,7 @@ class ControlsTimeText extends HTMLElement {
     this[attr] = newAttr;
   }
 
-  getTemplate(): HTMLTemplateElement {
+  protected getTemplate(): HTMLTemplateElement {
     const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
@@ -45,7 +45,7 @@ class ControlsTimeText extends HTMLElement {
     return template;
   }
 
-  getStyles(): string {
+  protected getStyles(): string {
     return `
       <style type="text/css">
         :host {}
@@ -54,7 +54,7 @@ class ControlsTimeText extends HTMLElement {
     `;
   }
 
-  render(): void {
+  protected render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
     this.currentText = this.shadowRoot.querySelector("span#currentText");

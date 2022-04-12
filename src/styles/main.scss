@@ -3,6 +3,7 @@
     position: relative;
     width: var(--player-width);
     height: var(--player-height);
+    z-index: 0;
     tf-player-controls,
     .player_video {
       position: absolute;

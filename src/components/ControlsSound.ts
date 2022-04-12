@@ -21,7 +21,7 @@ class ControlsSound extends HTMLElement {
   //Life cycle
   constructor() {
     super();
-    this.attachShadow({ mode: "open" });    
+    this.attachShadow({ mode: "open" });
   }
 
   static get observedAttributes(): string[] {
@@ -85,7 +85,7 @@ class ControlsSound extends HTMLElement {
 
   handleInput = (event: Event): void => {
     const target = event.target as HTMLInputElement;
-    
+
     this.changeVol(parseFloat(target.value));
   };
 

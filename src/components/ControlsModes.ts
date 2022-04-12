@@ -9,8 +9,8 @@ import theaterOffIcon from "@icons/theaterOff.svg";
 import PinPIcon from "@icons/pinp.svg";
 
 class ControlsModes extends HTMLElement {
-  btns: NodeListOf<HTMLButtonElement>;
-  teatherState: boolean;
+  protected btns: NodeListOf<HTMLButtonElement>;
+  protected teatherState: boolean;
   //Attributes
   player_media: HTMLVideoElement;
   player_width: string;
@@ -36,7 +36,7 @@ class ControlsModes extends HTMLElement {
     this[attr] = newAttr;
   }
 
-  getTemplate(): HTMLTemplateElement {
+  protected getTemplate(): HTMLTemplateElement {
     const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
@@ -48,7 +48,7 @@ class ControlsModes extends HTMLElement {
     return template;
   }
 
-  getStyles(): string {
+  protected getStyles(): string {
     return `
       <style type="text/css">
         :host {}
@@ -57,7 +57,7 @@ class ControlsModes extends HTMLElement {
     `;
   }
 
-  render(): void {
+  protected render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
     this.btns = this.shadowRoot.querySelectorAll("button");
@@ -81,7 +81,7 @@ class ControlsModes extends HTMLElement {
   }
 
   //Attributes
-  keyPress(event: KeyboardEvent): void {
+  protected keyPress(event: KeyboardEvent): void {
     switch (event.keyCode) {
       case 70:
         this.toggleFullScreen();
@@ -97,7 +97,7 @@ class ControlsModes extends HTMLElement {
     }
   }
 
-  setPinP(): void {
+  protected setPinP(): void {
     if (!("pictureInPictureEnabled" in document)) {
       this.btns[0].style.display = "none";
     } else {
@@ -105,7 +105,7 @@ class ControlsModes extends HTMLElement {
     }
   }
 
-  toggleFullScreen(): void {
+  protected toggleFullScreen(): void {
     if (document.fullscreenElement) {
       document.exitFullscreen();
       changeIcon(this.btns[2], fullscreenIcon);
@@ -115,7 +115,7 @@ class ControlsModes extends HTMLElement {
     }
   }
 
-  toggleTeatherMode(): void {
+  protected toggleTeatherMode(): void {
     if (this.teatherState) {
       this.player_media.parentElement.style.position = "relative";
       this.player_media.parentElement.style.width = this.player_width;

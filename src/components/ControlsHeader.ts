@@ -4,12 +4,12 @@ import controlsHeaderStyles from "@styles/components/header.scss";
 import shareIcon from "@icons/share.svg";
 
 class ControlsHeader extends HTMLElement {
-  container: HTMLDivElement;
-  btnShare: HTMLButtonElement;
-  modalShare: HTMLSpanElement;
-  iconsShare: NodeListOf<SVGElement>;
-  modal: boolean;
-  share_url: string;
+  protected container: HTMLDivElement;
+  protected btnShare: HTMLButtonElement;
+  protected modalShare: HTMLSpanElement;
+  protected iconsShare: NodeListOf<SVGElement>;
+  protected modal: boolean;
+  protected share_url: string;
   //Attributes
   player_title: string;
   player_share: string;
@@ -29,7 +29,7 @@ class ControlsHeader extends HTMLElement {
     this[attr] = newAttr;
   }
 
-  getTemplate(): HTMLTemplateElement {
+  protected getTemplate(): HTMLTemplateElement {
     const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
@@ -50,7 +50,7 @@ class ControlsHeader extends HTMLElement {
     return template;
   }
 
-  getStyles(): string {
+  protected getStyles(): string {
     return `
       <style type="text/css">
         :host {
@@ -61,7 +61,7 @@ class ControlsHeader extends HTMLElement {
     `;
   }
 
-  render(): void {
+  protected render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
     this.container = this.shadowRoot.querySelector(".player_controls-share");
@@ -98,7 +98,7 @@ class ControlsHeader extends HTMLElement {
   }
 
   //Features
-  toggleModal(): void {
+  protected toggleModal(): void {
     if (this.modal === false) {
       this.modalShare.style.display = "flex";
       this.btnShare.style.marginLeft = "1.5em";
@@ -109,18 +109,18 @@ class ControlsHeader extends HTMLElement {
     this.modal = !this.modal;
   }
 
-  addModalContent(content: string): void {
+  protected addModalContent(content: string): void {
     this.modalShare.innerHTML = content;
     this.toggleModal();
   }
 
-  removeModalContent(time: number): void {
+  protected removeModalContent(time: number): void {
     setTimeout(() => {
       this.modalShare.innerHTML = "";
     }, time);
   }
 
-  shareVideo(): void {
+  protected shareVideo(): void {
     const copyLink = () => {
       navigator.clipboard.writeText(this.share_url).then(() => {
         this.addModalContent(`Enlace copiado: ${this.share_url}`);
@@ -180,7 +180,7 @@ class ControlsHeader extends HTMLElement {
     };
   }
 
-  shareVideoByNavigator(): void {
+  protected shareVideoByNavigator(): void {
     navigator.share({
       title: this.player_title,
       text: "",
