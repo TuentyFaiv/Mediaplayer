@@ -32,7 +32,7 @@ class MediaPlayer extends HTMLElement {
 
     this.player_poster = null;
     this.player_title = "";
-    this.player_share = "true";
+    this.player_share = "false";
     this.player_width = "100%";
     this.player_height = "540px";
     this.player_background = "#040306";

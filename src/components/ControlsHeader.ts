@@ -38,8 +38,8 @@ class ControlsHeader extends HTMLElement {
         <button
           id="share"
           title="Share"
-          style="${this.player_share === "false" ? "display: none;" : "display: block;"}"
-          ${this.player_share === "false" ? "disabled=\"true\"" : ""}
+          style="${this.player_share === "true" ? "" : "display: none;"}"
+          ${this.player_share === "true" ? "" : "disabled=\"true\""}
         >
           ${shareIcon}
         </button>

@@ -144,17 +144,17 @@ class Controls extends HTMLElement {
     this.durationInput.onchange = this.updateProgress;
     this.durationInput.oninput = this.updateProgress;
 
-    // this.container.onmousemove = () => {
-    //   this.showControls();
-    // };
-    // this.container.onmouseenter = (event) => {
-    //   this.showControls();
-    //   this.hideControls(event);
-    // };
-    // this.container.onmouseover = (event) => {
-    //   this.showControls();
-    //   this.hideControls(event);
-    // };
+    this.container.onmousemove = () => {
+      this.showControls();
+    };
+    this.container.onmouseenter = (event) => {
+      this.showControls();
+      this.hideControls(event);
+    };
+    this.container.onmouseover = (event) => {
+      this.showControls();
+      this.hideControls(event);
+    };
   }
 
   connectedCallback(): void {
@@ -162,22 +162,23 @@ class Controls extends HTMLElement {
   }
 
   //Features
-  // protected showControls(): void {
-  //   this.container.style.opacity = "1";
-  //   this.container.style.cursor = "auto";
-  // }
+  protected showControls(): void {
+    this.container.style.opacity = "1";
+    this.container.style.cursor = "auto";
+  }
 
-  // protected hideControls(event: MouseEvent): void {
-  //   let timeout;
-  //   const moveX = event.movementX;
-  //   const moveY = event.movementY;
-  //   if ((moveX === 0 && moveY === 0)) {
-  //     timeout = setTimeout(() => {
-  //       this.container.style.opacity = "0";
-  //       this.container.style.cursor = "none";
-  //     }, 4000);
-  //   }
-  // }
+  protected hideControls(event: MouseEvent): void {
+    let timeout;
+    const moveX = event.movementX;
+    const moveY = event.movementY;
+
+    if ((moveX === 0 && moveY === 0)) {
+      timeout = setTimeout(() => {
+        this.container.style.opacity = "0";
+        this.container.style.cursor = "none";
+      }, 4000);
+    }
+  }
 
   protected updateProgress = (event: Event): void => {
     const target = event.target as HTMLInputElement;
