@@ -34,7 +34,7 @@ class MediaPlayer extends HTMLElement {
     this.player_title = "";
     this.player_share = "false";
     this.player_width = "100%";
-    this.player_height = "540px";
+    this.player_height = "auto";
     this.player_background = "#040306";
   }
 
@@ -59,8 +59,8 @@ class MediaPlayer extends HTMLElement {
     const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
-      <div class="player_container">
-        <video class="player_video" src=${this.player_src} poster=${this.player_poster}></video>
+      <div class="player">
+        <video class="player__video" src=${this.player_src} poster=${this.player_poster}></video>
         <tf-player-controls
           player_title="${this.player_title}"
           player_share="${this.player_share}"
@@ -68,11 +68,15 @@ class MediaPlayer extends HTMLElement {
           player_height="${this.player_height}"
           player_background="${this.player_background}"
         ></tf-player-controls>
-        <div class="player_actions">
-          <button title="Play or Replay (Spacebar)">${playIcon}</button>
+        <div class="player__start">
+          <button class="player__start-button" title="Play or Replay (Spacebar)">
+            ${playIcon}
+          </button>
         </div>
-        <div class="loader__container">
-          <div class="loader"><div></div><div></div><div></div><div></div></div>
+        <div class="loader">
+          <div class="loader__spinner">
+            <div></div><div></div><div></div><div></div>
+          </div>
         </div>
       </div>
     `;
@@ -88,6 +92,11 @@ class MediaPlayer extends HTMLElement {
           --player-height: ${this.player_height};
           --player-background: ${this.player_background};
         }
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
         ${playerStyles}
       </style>
     `;
@@ -98,10 +107,10 @@ class MediaPlayer extends HTMLElement {
     this.nodeCloned = this.getTemplate().content.cloneNode(true);
     this.shadowRoot.appendChild(this.nodeCloned);
 
-    this.player_media = this.shadowRoot.querySelector("video.player_video");
+    this.player_media = this.shadowRoot.querySelector("video.player__video");
     this.player_controls = this.shadowRoot.querySelector("tf-player-controls");
-    this.player_actions = this.shadowRoot.querySelector(".player_actions button");
-    this.player_loading = this.shadowRoot.querySelector(".loader__container");
+    this.player_actions = this.shadowRoot.querySelector("button.player__start-button");
+    this.player_loading = this.shadowRoot.querySelector("div.loader");
 
     this.player_controls.media = this.player_media;
 
@@ -140,7 +149,7 @@ class MediaPlayer extends HTMLElement {
   protected initialPlay(): void {
     this.player_media.currentTime = 0;
     this.player_media.play();
-    this.player_actions.parentElement.classList.add("hide");
+    this.player_actions.parentElement.classList.add("player__start-button--hide");
   }
 
   protected formatTime(seconds: string): string {
@@ -191,7 +200,7 @@ class MediaPlayer extends HTMLElement {
   }
 
   protected ended(): void {
-    this.player_actions.parentElement.classList.remove("hide");
+    this.player_actions.parentElement.classList.remove("player__start-button--hide");
     changeIcon(this.player_actions, replayIcon);
   }
 }
