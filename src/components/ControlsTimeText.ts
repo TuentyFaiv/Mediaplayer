@@ -37,9 +37,9 @@ class ControlsTimeText extends HTMLElement {
     const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
-      <span id="currentText">${this.player_current_text}</span>
-      <span>/</span>
-      <span id="durationText">${this.player_duration_text}</span>
+      <span class="time-text" id="currentText">${this.player_current_text}</span>
+      <span class="time-text">/</span>
+      <span class="time-text" id="durationText">${this.player_duration_text}</span>
     `;
 
     return template;
@@ -49,6 +49,10 @@ class ControlsTimeText extends HTMLElement {
     return `
       <style type="text/css">
         :host {}
+        * {
+          margin: 0;
+          padding: 0;
+        }
         ${timeTextStyles}
       </style>
     `;

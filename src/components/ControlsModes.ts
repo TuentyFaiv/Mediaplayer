@@ -40,9 +40,9 @@ class ControlsModes extends HTMLElement {
     const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
-      <button title="Picture in picture (p)">${PinPIcon}</button>
-      <button title="Theater mode (t)">${theaterOnIcon}</button>
-      <button title="Fullscreen (f)">${fullscreenIcon}</button>
+      <button class="mode" title="Picture in picture (p)">${PinPIcon}</button>
+      <button class="mode" title="Theater mode (t)">${theaterOnIcon}</button>
+      <button class="mode" title="Fullscreen (f)">${fullscreenIcon}</button>
     `;
 
     return template;
@@ -52,6 +52,10 @@ class ControlsModes extends HTMLElement {
     return `
       <style type="text/css">
         :host {}
+        * {
+          margin: 0;
+          padding: 0;
+        }
         ${modesStyles}
       </style>
     `;
@@ -60,7 +64,7 @@ class ControlsModes extends HTMLElement {
   protected render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
-    this.btns = this.shadowRoot.querySelectorAll("button");
+    this.btns = this.shadowRoot.querySelectorAll("button.mode");
     this.btns.forEach((element: HTMLElement) => {
       element.removeChild(element.firstChild);
     });

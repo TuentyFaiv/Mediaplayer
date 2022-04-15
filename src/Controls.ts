@@ -84,25 +84,25 @@ class Controls extends HTMLElement {
     const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
-      <div class="player_controls" tabindex="0">
+      <div class="controls" tabindex="0">
         <tf-controls-header
           player_title="${this.player_title}"
           player_share="${this.player_share}"
         ></tf-controls-header>
-        <div class="player_controls-footer">
-          <div class="player_controls-time">
+        <div class="controls__footer">
+          <div class="controls__progress">
             <input
-              id="timeInput"
-              class="player_controls-inputTime"
+              id="progress"
+              class="controls__progress-input"
               type="range"
               min="0"
               value="${this.player_current}"
               max="${this.player_duration}"
             />
-            <div class="player_played"></div>
-            <div class="player_buffered"></div>
+            <div class="controls__progress-played"></div>
+            <div class="controls__progress-buffered"></div>
           </div>
-          <div class="player_controls-timeAndSound">
+          <div class="controls__time-sound">
             <tf-controls-time-text></tf-controls-time-text>
             <tf-controls-sound></tf-controls-sound>
           </div>
@@ -123,6 +123,10 @@ class Controls extends HTMLElement {
     return `
       <style type="text/css">
         :host {}
+        * {
+          margin: 0;
+          padding: 0;
+        }
         ${controlsStyles}
       </style>
     `;
@@ -131,15 +135,18 @@ class Controls extends HTMLElement {
   protected render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
-    this.container = this.shadowRoot.querySelector(".player_controls");
-    this.durationInput = this.shadowRoot.querySelector("input#timeInput");
+    this.container = this.shadowRoot.querySelector(".controls");
+    this.durationInput = this.shadowRoot.querySelector("input#progress");
     this.controls_play = this.shadowRoot.querySelector("tf-controls-play");
     this.controls_timeText = this.shadowRoot.querySelector("tf-controls-time-text");
     this.controls_sound = this.shadowRoot.querySelector("tf-controls-sound");
     this.controls_modes = this.shadowRoot.querySelector("tf-controls-modes");
 
-    this.playedEl = this.shadowRoot.querySelector(".player_played");
-    this.bufferedEl = this.shadowRoot.querySelector(".player_buffered");
+    this.playedEl = this.shadowRoot.querySelector(".controls__progress-played");
+    this.bufferedEl = this.shadowRoot.querySelector(".controls__progress-buffered");
+
+    const footer = this.shadowRoot.querySelector("div.controls__footer") as HTMLDivElement;
+    this.controls_sound.footer = footer;
 
     this.durationInput.onchange = this.updateProgress;
     this.durationInput.oninput = this.updateProgress;

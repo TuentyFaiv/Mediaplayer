@@ -7,15 +7,32 @@ import volumeDownIcon from "@icons/volume_down.svg";
 import volumeOffIcon from "@icons/volume_off.svg";
 
 class ControlsSound extends HTMLElement {
+  protected resizeOberver: ResizeObserver;
   volumeBtn: HTMLButtonElement;
   volumeInput: HTMLInputElement;
   volumeActive: HTMLDivElement;
+  player_footer: HTMLDivElement;
   //Attributes
   player_media: HTMLVideoElement;
 
   set media(media: HTMLVideoElement) {
     this.player_media = media;
     this.activeVolume(this.player_media.volume);
+  }
+
+  set footer(footer: HTMLDivElement) {
+    this.player_footer = footer;
+    const soundBar = this.shadowRoot.querySelector(".sound__bar");
+    this.resizeOberver = !this.resizeOberver ? new ResizeObserver((entries) => {
+      const footerObserved = entries[0].target;
+      console.log({ w: footerObserved.clientWidth, soundBar });
+      if (footerObserved.clientWidth < 376) {
+        soundBar.classList.add("sound__bar--mobile");
+      } else {
+        soundBar.classList.remove("sound__bar--mobile");
+      }
+    }) : this.resizeOberver;
+    this.resizeOberver.observe(this.player_footer);
   }
 
   //Life cycle
@@ -36,12 +53,14 @@ class ControlsSound extends HTMLElement {
     const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
-      <div class="container" tabindex="0">
-        <button title="Mute (m)">
+      <div class="sound" tabindex="0">
+        <button class="sound__button" title="Mute (m)">
           ${volumeUpIcon}
         </button>
-        <div class="soundInput">
+        <div class="sound__bar">
           <input
+            class="sound__bar-input"
+            id="soundBar"
             tabindex="-1"
             type="range"
             min="0"
@@ -50,7 +69,7 @@ class ControlsSound extends HTMLElement {
             value="1"
             title="Volume (Arrow up) or (Arrow down)"
           />
-          <div class="soundInput_active">
+          <div class="sound__bar-active">
           </div>
         </div>
       </div>
@@ -63,6 +82,10 @@ class ControlsSound extends HTMLElement {
     return `
       <style type="text/css">
         :host {}
+        * {
+          margin: 0;
+          padding: 0;
+        }
         ${soundStyles}
       </style>
     `;
@@ -72,8 +95,8 @@ class ControlsSound extends HTMLElement {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
     this.volumeBtn = this.shadowRoot.querySelector("button");
-    this.volumeInput = this.shadowRoot.querySelector("input");
-    this.volumeActive = this.shadowRoot.querySelector(".soundInput_active");
+    this.volumeInput = this.shadowRoot.querySelector("input#soundBar");
+    this.volumeActive = this.shadowRoot.querySelector(".sound__bar-active");
 
     this.volumeBtn.removeChild(this.volumeBtn.firstChild);
 

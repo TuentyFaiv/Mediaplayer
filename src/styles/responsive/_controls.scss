@@ -1,0 +1,14 @@
+.controls {
+  @media screen and (max-width: 768px) {
+    & tf-controls-modes,
+    &__time-sound {
+      gap: .5em;
+    }
+  }
+  @media screen and (max-width: 535px) {
+    & tf-controls-modes,
+    &__time-sound {
+      gap: .3em;
+    }
+  }
+}

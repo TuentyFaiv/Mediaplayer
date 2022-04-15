@@ -54,7 +54,7 @@ class ControlsHeader extends HTMLElement {
     return `
       <style type="text/css">
         :host {
-          cursor: normal;
+          cursor: default;
         }
         ${controlsHeaderStyles}
       </style>
