@@ -1,24 +1,33 @@
-const path = require('path');
-const TerserJSPlugin = require('terser-webpack-plugin');
-const TsconfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+/* eslint-disable @typescript-eslint/no-var-requires */
+const path = require("path");
+const TerserJSPlugin = require("terser-webpack-plugin");
+const TsconfigPathsPlugin = require("tsconfig-paths-webpack-plugin");
+const ESLintPlugin = require("eslint-webpack-plugin");
 
 module.exports = {
-  devtool: 'inline-source-map',
-  entry: './src/MediaPlayer.ts',
+  devtool: "inline-source-map",
+  entry: "./src/MediaPlayer.ts",
   output: {
-    filename: 'index.js',
-    path: path.resolve(__dirname, 'lib'),
-    publicPath: '/',
-    crossOriginLoading: 'anonymous'
+    filename: "index.js",
+    path: path.resolve(__dirname, "lib"),
+    publicPath: "/",
+    crossOriginLoading: "anonymous"
   },
   devServer: {
-    contentBase: path.join(__dirname, 'lib'),
+    static: {
+      directory: path.join(__dirname, "lib"),
+      publicPath: "/"
+    },
+    client: {
+      logging: "info",
+      overlay: {
+        errors: true,
+        warnings: false
+      }
+    },
+    compress: true,
     port: 4000,
     hot: true,
-    publicPath: '/',
-    stats: {
-      colors: true
-    },
     headers: {
       "Access-Control-Allow-Origin": "*",
       "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, PATCH, OPTIONS",
@@ -27,24 +36,24 @@ module.exports = {
   },
   resolve: {
     plugins: [new TsconfigPathsPlugin()],
-    extensions: ['.ts', '.js', '.scss', '.svg'],
+    extensions: [".ts", ".js", ".scss", ".svg"]
   },
   module: {
     rules: [
       {
         test: /\.ts$/,
-        use: 'ts-loader',
-        exclude: /node_modules/,
+        use: "ts-loader",
+        exclude: /node_modules/
       },
       {
         test: /\.scss$/,
         use: [
-          'raw-loader',
+          "raw-loader",
           {
-            loader: 'sass-loader',
+            loader: "sass-loader",
             options: {
               sassOptions: {
-                includePaths: [path.resolve(__dirname, 'node_modules')]
+                includePaths: [path.resolve(__dirname, "node_modules")]
               }
             }
           }
@@ -54,18 +63,24 @@ module.exports = {
         test: /\.svg$/,
         use: [
           {
-            loader: 'url-loader',
+            loader: "url-loader",
             options: {
               mimetype: false,
-              encoding: false,
-            },
-          },
-        ],
-      },
-    ],
+              encoding: false
+            }
+          }
+        ]
+      }
+    ]
   },
   optimization: {
     minimize: true,
     minimizer: [new TerserJSPlugin()]
-  }
+  },
+  plugins: [
+    new ESLintPlugin({
+      extensions: ["ts"],
+      fix: true
+    })
+  ]
 };

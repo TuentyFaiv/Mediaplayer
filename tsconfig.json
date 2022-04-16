@@ -7,7 +7,7 @@
       "ESNext",
       "ES6"
     ],
-    "allowJs": true,
+    "allowJs": false,
     "sourceMap": true,
     "outDir": "./lib",
     "removeComments": true,
@@ -29,8 +29,8 @@
       "@styles/*": [
         "./styles/*"
       ],
-      "@utils/*": [
-        "./utils/*"
+      "@utils": [
+        "./utils/index.ts"
       ],
       "@interfaces": [
         "./utils/interfaces.ts"
@@ -40,9 +40,5 @@
   "exclude": [
     "node_modules",
     "lib"
-  ],
-  "include": [
-    "./src/**/*",
-    "./declaration.d.ts"
   ]
 }

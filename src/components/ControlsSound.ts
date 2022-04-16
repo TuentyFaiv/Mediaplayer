@@ -1,15 +1,18 @@
-import { changeIcon } from '@utils/globalUtils';
-import soundStyles from '@styles/components/sound.scss';
+import { changeIcon } from "@utils";
+import soundStyles from "@styles/components/sound.scss";
 
-import volumeUpIcon from '@icons/volume_up.svg';
-import volumeMuteIcon from '@icons/volume_mute.svg';
-import volumeDownIcon from '@icons/volume_down.svg';
-import volumeOffIcon from '@icons/volume_off.svg';
+import volumeUpIcon from "@icons/volume_up.svg";
+import volumeMuteIcon from "@icons/volume_mute.svg";
+import volumeDownIcon from "@icons/volume_down.svg";
+import volumeOffIcon from "@icons/volume_off.svg";
+import { Host } from "@interfaces";
 
 class ControlsSound extends HTMLElement {
+  protected resizeOberver: ResizeObserver;
   volumeBtn: HTMLButtonElement;
   volumeInput: HTMLInputElement;
   volumeActive: HTMLDivElement;
+  player_footer: HTMLDivElement;
   //Attributes
   player_media: HTMLVideoElement;
 
@@ -18,14 +21,35 @@ class ControlsSound extends HTMLElement {
     this.activeVolume(this.player_media.volume);
   }
 
+  set footer(footer: HTMLDivElement) {
+    this.player_footer = footer;
+    const sound = this.shadowRoot.querySelector(".sound");
+    const wrapperTimeSound = (sound.parentNode as unknown as Host<HTMLDivElement>).host.parentElement;
+    this.resizeOberver = !this.resizeOberver ? new ResizeObserver((entries) => {
+      const footerObserved = entries[0].target;
+      // const widthWrapper = `calc(${wrapperTimeSound.firstElementChild.clientWidth}px + .5em + 30px)`;
+
+      if (footerObserved.clientWidth < 376) {
+        wrapperTimeSound.classList.add("controls__time-sound--mobile");
+        // wrapperTimeSound.style.width = widthWrapper;
+        sound.classList.add("sound--mobile");
+      } else {
+        wrapperTimeSound.classList.remove("controls__time-sound--mobile");
+        // wrapperTimeSound.style.width = "max-content";
+        sound.classList.remove("sound--mobile");
+      }
+    }) : this.resizeOberver;
+    this.resizeOberver.observe(this.player_footer);
+  }
+
   //Life cycle
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });    
+    this.attachShadow({ mode: "open" });
   }
 
   static get observedAttributes(): string[] {
-    return ['player_media'];
+    return ["player_media"];
   }
 
   attributeChangedCallback(attr, oldAttr, newAttr): void {
@@ -33,15 +57,17 @@ class ControlsSound extends HTMLElement {
   }
 
   getTemplate(): HTMLTemplateElement {
-    const template = document.createElement('template');
+    const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
-      <div class="container" tabindex="0">
-        <button title="Mute (m)">
+      <div class="sound" tabindex="0">
+        <button class="sound__button" title="Mute (m)">
           ${volumeUpIcon}
         </button>
-        <div class="soundInput">
+        <div class="sound__bar">
           <input
+            class="sound__bar-input"
+            id="soundBar"
             tabindex="-1"
             type="range"
             min="0"
@@ -50,7 +76,7 @@ class ControlsSound extends HTMLElement {
             value="1"
             title="Volume (Arrow up) or (Arrow down)"
           />
-          <div class="soundInput_active">
+          <div class="sound__bar-active">
           </div>
         </div>
       </div>
@@ -63,6 +89,10 @@ class ControlsSound extends HTMLElement {
     return `
       <style type="text/css">
         :host {}
+        * {
+          margin: 0;
+          padding: 0;
+        }
         ${soundStyles}
       </style>
     `;
@@ -71,17 +101,23 @@ class ControlsSound extends HTMLElement {
   render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
-    this.volumeBtn = this.shadowRoot.querySelector('button');
-    this.volumeInput = this.shadowRoot.querySelector('input');
-    this.volumeActive = this.shadowRoot.querySelector('.soundInput_active');
+    this.volumeBtn = this.shadowRoot.querySelector("button");
+    this.volumeInput = this.shadowRoot.querySelector("input#soundBar");
+    this.volumeActive = this.shadowRoot.querySelector(".sound__bar-active");
 
     this.volumeBtn.removeChild(this.volumeBtn.firstChild);
 
     this.volumeBtn.onclick = () => this.toggleMute();
-    this.volumeInput.onchange = (event: any) => this.changeVol(event.target.value);
-    this.volumeInput.oninput = (event: any) => this.changeVol(event.target.value);
-    document.addEventListener('keydown', this.keyPress.bind(this));
+    this.volumeInput.onchange = this.handleInput;
+    this.volumeInput.oninput = this.handleInput;
+    document.addEventListener("keydown", this.keyPress.bind(this));
   }
+
+  handleInput = (event: Event): void => {
+    const target = event.target as HTMLInputElement;
+
+    this.changeVol(parseFloat(target.value));
+  };
 
   connectedCallback(): void {
     this.render();
@@ -126,7 +162,7 @@ class ControlsSound extends HTMLElement {
       this.player_media.muted = false;
     } else {
       changeIcon(this.volumeBtn, volumeOffIcon);
-      this.volumeInput.value = '0';
+      this.volumeInput.value = "0";
       this.activeVolume(0);
       this.player_media.muted = true;
     }
@@ -148,5 +184,5 @@ class ControlsSound extends HTMLElement {
   }
 }
 
-customElements.define('tf-controls-sound', ControlsSound);
+customElements.define("tf-controls-sound", ControlsSound);
 export default ControlsSound;

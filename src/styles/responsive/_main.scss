@@ -1,0 +1,19 @@
+@media screen and (max-width: 768px) {
+  .player {
+    &__start-button {
+      width: 35%;
+      height: 35%;
+    }
+  }
+  .loader {
+    &__spinner {
+      width: 65px;
+      height: 65px;
+      div {
+        width: 49px;
+        height: 49px;
+        border-width: 5px;
+      }
+    }
+  }
+}

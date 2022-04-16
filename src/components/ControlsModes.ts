@@ -1,21 +1,25 @@
-import { changeIcon } from '@utils/globalUtils';
+import { changeIcon } from "@utils";
 
-import modesStyles from '@styles/components/modes.scss';
+import modesStyles from "@styles/components/modes.scss";
 
-import fullscreenIcon from '@icons/fullscreen.svg';
-import fullscreenExitIcon from '@icons/fullscreen_exit.svg';
-import theaterOnIcon from '@icons/theaterOn.svg';
-import theaterOffIcon from '@icons/theaterOff.svg';
-import PinPIcon from '@icons/pinp.svg';
+import fullscreenIcon from "@icons/fullscreen.svg";
+import fullscreenExitIcon from "@icons/fullscreen_exit.svg";
+import theaterOnIcon from "@icons/theaterOn.svg";
+import theaterOffIcon from "@icons/theaterOff.svg";
+import PinPIcon from "@icons/pinp.svg";
 
 class ControlsModes extends HTMLElement {
-  btns: NodeListOf<HTMLButtonElement>;
-  teatherState: boolean;
+  protected btns: NodeListOf<HTMLButtonElement>;
+  protected teatherState: boolean;
+  protected pipButton: HTMLButtonElement;
+  protected theaterButton: HTMLButtonElement;
+  protected fullscrennButton: HTMLButtonElement;
   //Attributes
-  player_media: any;
+  player_media: HTMLVideoElement;
   player_width: string;
   player_height: string;
   player_background: string;
+  player_theater: string;
 
   set media(media: HTMLVideoElement) {
     this.player_media = media;
@@ -24,56 +28,65 @@ class ControlsModes extends HTMLElement {
   //Life cycle
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
     this.teatherState = false;
   }
 
   static get observedAttributes(): string[] {
-    return ['player_media', 'player_width', 'player_height', 'player_background'];
+    return ["player_media", "player_width", "player_height", "player_background", "player_theater"];
   }
 
   attributeChangedCallback(attr, oldAttr, newAttr): void {
     this[attr] = newAttr;
   }
 
-  getTemplate(): HTMLTemplateElement {
-    const template = document.createElement('template');
+  protected getTemplate(): HTMLTemplateElement {
+    const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
-      <button title="Picture in picture (p)">${PinPIcon}</button>
-      <button title="Theater mode (t)">${theaterOnIcon}</button>
-      <button title="Fullscreen (f)">${fullscreenIcon}</button>
+      <button class="mode" id="pip" title="Picture in picture (p)">${PinPIcon}</button>
+      <button class="mode" id="theaterMode" title="Theater mode (t)">${theaterOnIcon}</button>
+      <button class="mode" id="fullscreen" title="Fullscreen (f)">${fullscreenIcon}</button>
     `;
 
     return template;
   }
 
-  getStyles(): string {
+  protected getStyles(): string {
     return `
       <style type="text/css">
         :host {}
+        * {
+          margin: 0;
+          padding: 0;
+        }
         ${modesStyles}
       </style>
     `;
   }
 
-  render(): void {
+  protected render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
-    this.btns = this.shadowRoot.querySelectorAll('button');
+    this.btns = this.shadowRoot.querySelectorAll("button.mode");
     this.btns.forEach((element: HTMLElement) => {
       element.removeChild(element.firstChild);
     });
+    this.pipButton = this.shadowRoot.querySelector("button#pip");
+    this.theaterButton = this.shadowRoot.querySelector("button#theaterMode");
+    this.fullscrennButton = this.shadowRoot.querySelector("button#fullscreen");
 
-    if (!('pictureInPictureEnabled' in document)) {
-      this.btns[0].style.display = 'none';
+    if (!("pictureInPictureEnabled" in document)) {
+      this.pipButton.style.display = "none";
     }
 
-    this.btns[0].onclick = () => this.setPinP();
-    this.btns[1].onclick = () => this.toggleTeatherMode();
-    this.btns[2].onclick = () => this.toggleFullScreen();
+    this.pipButton.onclick = () => this.setPinP();
+    this.theaterButton.onclick = () => this.toggleTeatherMode();
+    this.fullscrennButton.onclick = () => this.toggleFullScreen();
 
-    document.addEventListener('keydown', this.keyPress.bind(this));
+    if (this.player_theater !== "true") this.theaterButton.remove();
+
+    document.addEventListener("keydown", this.keyPress.bind(this));
   }
 
   connectedCallback(): void {
@@ -81,7 +94,7 @@ class ControlsModes extends HTMLElement {
   }
 
   //Attributes
-  keyPress(event: KeyboardEvent): void {
+  protected keyPress(event: KeyboardEvent): void {
     switch (event.keyCode) {
       case 70:
         this.toggleFullScreen();
@@ -90,55 +103,55 @@ class ControlsModes extends HTMLElement {
         this.setPinP();
         break;
       case 84:
-        this.toggleTeatherMode();
+        if (this.player_theater === "true") this.toggleTeatherMode();
         break;
       default:
         break;
     }
   }
 
-  setPinP(): void {
-    if (!('pictureInPictureEnabled' in document)) {
-      this.btns[0].style.display = 'none';
+  protected setPinP(): void {
+    if (!("pictureInPictureEnabled" in document)) {
+      this.pipButton.style.display = "none";
     } else {
       this.player_media.requestPictureInPicture();
     }
   }
 
-  toggleFullScreen(): void {
+  protected toggleFullScreen(): void {
     if (document.fullscreenElement) {
       document.exitFullscreen();
-      changeIcon(this.btns[2], fullscreenIcon);
+      changeIcon(this.fullscrennButton, fullscreenIcon);
     } else {
       this.player_media.parentElement.requestFullscreen();
-      changeIcon(this.btns[2], fullscreenExitIcon);
+      changeIcon(this.fullscrennButton, fullscreenExitIcon);
     }
   }
 
-  toggleTeatherMode(): void {
+  protected toggleTeatherMode(): void {
     if (this.teatherState) {
-      this.player_media.parentElement.style.position = 'relative';
+      this.player_media.parentElement.style.position = "relative";
       this.player_media.parentElement.style.width = this.player_width;
       this.player_media.parentElement.style.height = this.player_height;
-      this.player_media.parentElement.style.top = '';
-      this.player_media.parentElement.style.left = '';
-      this.player_media.parentElement.style.right = '';
+      this.player_media.parentElement.style.top = "";
+      this.player_media.parentElement.style.left = "";
+      this.player_media.parentElement.style.right = "";
       this.player_media.style.background = this.player_background;
-      changeIcon(this.btns[1], theaterOnIcon);
+      changeIcon(this.theaterButton, theaterOnIcon);
       this.teatherState = false;
     } else {
-      this.player_media.parentElement.style.position = 'absolute';
-      this.player_media.parentElement.style.width = '100%';
-      this.player_media.parentElement.style.height = '80vh';
-      this.player_media.parentElement.style.top = '0';
-      this.player_media.parentElement.style.left = '0';
-      this.player_media.parentElement.style.right = '0';
+      this.player_media.parentElement.style.position = "absolute";
+      this.player_media.parentElement.style.width = "100%";
+      this.player_media.parentElement.style.height = "80vh";
+      this.player_media.parentElement.style.top = "0";
+      this.player_media.parentElement.style.left = "0";
+      this.player_media.parentElement.style.right = "0";
       this.player_media.style.background = this.player_background;
-      changeIcon(this.btns[1], theaterOffIcon);
+      changeIcon(this.theaterButton, theaterOffIcon);
       this.teatherState = true;
     }
   }
 }
 
-customElements.define('tf-controls-modes', ControlsModes);
+customElements.define("tf-controls-modes", ControlsModes);
 export default ControlsModes;

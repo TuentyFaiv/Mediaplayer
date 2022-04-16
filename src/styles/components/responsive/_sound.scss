@@ -1,0 +1,21 @@
+.sound {
+  $root: &;
+  @media screen and (max-width: 425px) {
+    &:focus,
+    &:hover {
+      #{$root}__bar,
+      #{$root}__bar-input {
+        width: 80px;
+      }
+    }
+  }
+  @media screen and (max-width: 375px) {
+    &:focus,
+    &:hover {
+      #{$root}__bar,
+      #{$root}__bar-input {
+        width: 60px;
+      }
+    }
+  }
+}

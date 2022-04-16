@@ -1,0 +1,67 @@
+{
+  "parser": "@typescript-eslint/parser",
+  "parserOptions": {
+    "project": "./tsconfig.eslint.json"
+  },
+  "extends": [
+    "airbnb-typescript/base",
+    "plugin:@typescript-eslint/recommended"
+  ],
+  "env": {
+    "browser": true
+  },
+  "plugins": [
+    "@typescript-eslint",
+    "import"
+  ],
+  "settings": {
+    "import/parsers": {
+      "@typescript-eslint/parser": [
+        "ts"
+      ]
+    },
+    "import/resolver": {
+      "typescript": {}
+    }
+  },
+  "rules": {
+    "import/no-unresolved": "error",
+    "linebreak-style": 0,
+    "quotes": "off",
+    "@typescript-eslint/quotes": [
+      "error",
+      "double"
+    ],
+    "comma-dangle": "off",
+    "@typescript-eslint/comma-dangle": [
+      "error",
+      "never"
+    ],
+    "max-len": [
+      "error",
+      {
+        "code": 130
+      }
+    ],
+    "dot-notation": "off",
+    "@typescript-eslint/dot-notation": 0,
+    "padded-blocks": 0,
+    "object-shorthand": 0,
+    "object-curly-newline": 0,
+    "no-case-declarations": 0,
+    "no-unused-vars": "off",
+    "no-trailing-spaces": "error",
+    "@typescript-eslint/no-unused-vars": 1,
+    "no-debugger": 0,
+    "no-plusplus": 0,
+    "no-console": 1,
+    "lines-between-class-members": "off",
+    "@typescript-eslint/lines-between-class-members": [
+      "error",
+      "always",
+      {
+        "exceptAfterSingleLine": true
+      }
+    ]
+  }
+}

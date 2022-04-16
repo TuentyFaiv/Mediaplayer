@@ -1,44 +1,71 @@
-import { changeIcon } from '@utils/globalUtils';
-import controlsPlayStyles from '@styles/components/play.scss';
+import { changeIcon } from "@utils";
+import controlsPlayStyles from "@styles/components/play.scss";
 
-import playIcon from '@icons/play.svg';
-import pauseIcon from '@icons/pause.svg';
-import forwardIcon from '@icons/forward.svg';
-import replayIcon from '@icons/replay.svg';
+import playIcon from "@icons/play.svg";
+import pauseIcon from "@icons/pause.svg";
+import forwardIcon from "@icons/forward.svg";
+import replayIcon from "@icons/replay.svg";
 
 class ControlsPlay extends HTMLElement {
-  btns: NodeListOf<HTMLButtonElement>;
-  playbox: HTMLDivElement;
+  protected btns: NodeListOf<HTMLButtonElement>;
+  protected playbox: HTMLDivElement;
+  protected resizeOberver: ResizeObserver;
   //Attributes
   player_media: HTMLVideoElement;
 
   set media(media: HTMLVideoElement) {
     this.player_media = media;
-    this.playbox.style.top = `calc(-${this.player_media.offsetHeight}px + 90px)`;
-    this.playbox.style.width = `${this.player_media.offsetWidth}px`;
-    this.playbox.style.height = `calc(${this.player_media.offsetHeight}px - 110px)`;
+    const controls = this.player_media.nextElementSibling.shadowRoot.querySelector(".controls");
+    const header = controls.firstElementChild;
+    const footer = controls.lastElementChild;
+    const lessHeight = header.clientHeight + footer.clientHeight;
+
+    if (this.playbox) {
+      this.resizeOberver = !this.resizeOberver ? new ResizeObserver((entries) => {
+        const mediaObserved = entries[0].target;
+        this.playbox.style.bottom = `${footer.clientHeight}px`;
+        this.playbox.style.width = `${mediaObserved.clientWidth}px`;
+        this.playbox.style.height = `calc(${mediaObserved.clientHeight}px - ${lessHeight}px)`;
+        if (mediaObserved.clientWidth < 376) {
+          this.playbox.style.display = "none";
+          this.btns.forEach((btn) => {
+            const transform = (mediaObserved.clientHeight / 2) - (btn.clientHeight / 2);
+            btn.style.transform = `translateY(-${transform}px)`;
+          });
+        } else {
+          this.playbox.style.display = "block";
+          this.btns.forEach((btn) => {
+            btn.style.transform = "translateY(0)";
+          });
+        }
+      }) : this.resizeOberver;
+      this.resizeOberver.observe(this.player_media);
+
+      this.playbox.style.bottom = `${footer.clientHeight}px`;
+      this.playbox.style.width = `${this.player_media.clientWidth}px`;
+      this.playbox.style.height = `calc(${this.player_media.clientHeight}px - ${lessHeight}px)`;
+    }
   }
 
   //Life cycle
   constructor() {
     super();
-    this.attachShadow({ mode: 'open' });
+    this.attachShadow({ mode: "open" });
   }
 
   static get observedAttributes(): string[] {
-    return ['player_media'];
+    return ["player_media"];
   }
 
   attributeChangedCallback(attr, oldAttr, newAttr): void {
     this[attr] = newAttr;
   }
 
-  getTemplate(): HTMLTemplateElement {
-    const template = document.createElement('template');
+  protected getTemplate(): HTMLTemplateElement {
+    const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
-      <div id="divPlay">
-      </div>
+      <div id="divPlay"></div>
       <button class="backward" title="Backward 10s (Arrow left)">
         ${replayIcon}
       </button>
@@ -53,7 +80,7 @@ class ControlsPlay extends HTMLElement {
     return template;
   }
 
-  getStyles(): string {
+  protected getStyles(): string {
     return `
       <style type="text/css">
         :host {}
@@ -62,11 +89,11 @@ class ControlsPlay extends HTMLElement {
     `;
   }
 
-  render(): void {
+  protected render(): void {
     this.shadowRoot.appendChild(this.getTemplate().content.cloneNode(true));
 
-    this.playbox = this.shadowRoot.querySelector('#divPlay');
-    this.btns = this.shadowRoot.querySelectorAll('button');
+    this.playbox = this.shadowRoot.querySelector("#divPlay");
+    this.btns = this.shadowRoot.querySelectorAll("button");
     this.btns.forEach((element: HTMLButtonElement) => {
       element.removeChild(element.firstChild);
     });
@@ -75,15 +102,19 @@ class ControlsPlay extends HTMLElement {
     this.btns[1].onclick = () => this.togglePlay();
     this.btns[0].onclick = () => this.moveTo(-10);
     this.btns[2].onclick = () => this.moveTo(10);
-    document.addEventListener('keydown', this.keyPress.bind(this));
+    document.addEventListener("keydown", this.keyPress.bind(this));
   }
 
   connectedCallback(): void {
     this.render();
   }
 
+  disconnectedCallback(): void {
+    this.resizeOberver.disconnect();
+  }
+
   //Features
-  keyPress(event: KeyboardEvent): void {
+  protected keyPress(event: KeyboardEvent): void {
     switch (event.keyCode) {
       case 37:
         this.moveTo(-10);
@@ -99,11 +130,11 @@ class ControlsPlay extends HTMLElement {
     }
   }
 
-  moveTo(secs: number): void {
+  protected moveTo(secs: number): void {
     this.player_media.currentTime = this.player_media.currentTime + secs;
   }
 
-  togglePlay(): void {
+  protected togglePlay(): void {
     if (this.player_media.paused) {
       changeIcon(this.btns[1], pauseIcon);
       this.player_media.play();
@@ -114,5 +145,5 @@ class ControlsPlay extends HTMLElement {
   }
 }
 
-customElements.define('tf-controls-play', ControlsPlay);
+customElements.define("tf-controls-play", ControlsPlay);
 export default ControlsPlay;
