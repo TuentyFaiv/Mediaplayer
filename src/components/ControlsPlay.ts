@@ -15,18 +15,35 @@ class ControlsPlay extends HTMLElement {
 
   set media(media: HTMLVideoElement) {
     this.player_media = media;
+    const controls = this.player_media.nextElementSibling.shadowRoot.querySelector(".controls");
+    const header = controls.firstElementChild;
+    const footer = controls.lastElementChild;
+    const lessHeight = header.clientHeight + footer.clientHeight;
+
     if (this.playbox) {
       this.resizeOberver = !this.resizeOberver ? new ResizeObserver((entries) => {
-        const newSize = entries[0].target;
-        this.playbox.style.top = `calc(-${newSize.clientHeight}px + 90px)`;
-        this.playbox.style.width = `${newSize.clientWidth}px`;
-        this.playbox.style.height = `calc(${newSize.clientHeight}px - 110px)`;
+        const mediaObserved = entries[0].target;
+        this.playbox.style.bottom = `${footer.clientHeight}px`;
+        this.playbox.style.width = `${mediaObserved.clientWidth}px`;
+        this.playbox.style.height = `calc(${mediaObserved.clientHeight}px - ${lessHeight}px)`;
+        if (mediaObserved.clientWidth < 376) {
+          this.playbox.style.display = "none";
+          this.btns.forEach((btn) => {
+            const transform = (mediaObserved.clientHeight / 2) - (btn.clientHeight / 2);
+            btn.style.transform = `translateY(-${transform}px)`;
+          });
+        } else {
+          this.playbox.style.display = "block";
+          this.btns.forEach((btn) => {
+            btn.style.transform = "translateY(0)";
+          });
+        }
       }) : this.resizeOberver;
       this.resizeOberver.observe(this.player_media);
 
-      this.playbox.style.top = `calc(-${this.player_media.clientHeight}px + 90px)`;
+      this.playbox.style.bottom = `${footer.clientHeight}px`;
       this.playbox.style.width = `${this.player_media.clientWidth}px`;
-      this.playbox.style.height = `calc(${this.player_media.clientHeight}px - 110px)`;
+      this.playbox.style.height = `calc(${this.player_media.clientHeight}px - ${lessHeight}px)`;
     }
   }
 

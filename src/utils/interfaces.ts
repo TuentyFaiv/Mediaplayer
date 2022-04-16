@@ -11,3 +11,9 @@ export enum ReadyStateMedia {
   HAVE_FUTURE_DATA = 3,
   HAVE_ENOUGH_DATA = 4
 }
+
+export interface Host<T> {
+  host: {
+    parentElement: T
+  }
+}

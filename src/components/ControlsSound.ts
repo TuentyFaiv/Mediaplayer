@@ -5,6 +5,7 @@ import volumeUpIcon from "@icons/volume_up.svg";
 import volumeMuteIcon from "@icons/volume_mute.svg";
 import volumeDownIcon from "@icons/volume_down.svg";
 import volumeOffIcon from "@icons/volume_off.svg";
+import { Host } from "@interfaces";
 
 class ControlsSound extends HTMLElement {
   protected resizeOberver: ResizeObserver;
@@ -22,14 +23,20 @@ class ControlsSound extends HTMLElement {
 
   set footer(footer: HTMLDivElement) {
     this.player_footer = footer;
-    const soundBar = this.shadowRoot.querySelector(".sound__bar");
+    const sound = this.shadowRoot.querySelector(".sound");
+    const wrapperTimeSound = (sound.parentNode as unknown as Host<HTMLDivElement>).host.parentElement;
     this.resizeOberver = !this.resizeOberver ? new ResizeObserver((entries) => {
       const footerObserved = entries[0].target;
-      console.log({ w: footerObserved.clientWidth, soundBar });
+      // const widthWrapper = `calc(${wrapperTimeSound.firstElementChild.clientWidth}px + .5em + 30px)`;
+
       if (footerObserved.clientWidth < 376) {
-        soundBar.classList.add("sound__bar--mobile");
+        wrapperTimeSound.classList.add("controls__time-sound--mobile");
+        // wrapperTimeSound.style.width = widthWrapper;
+        sound.classList.add("sound--mobile");
       } else {
-        soundBar.classList.remove("sound__bar--mobile");
+        wrapperTimeSound.classList.remove("controls__time-sound--mobile");
+        // wrapperTimeSound.style.width = "max-content";
+        sound.classList.remove("sound--mobile");
       }
     }) : this.resizeOberver;
     this.resizeOberver.observe(this.player_footer);

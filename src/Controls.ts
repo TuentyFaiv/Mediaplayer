@@ -32,6 +32,7 @@ class Controls extends HTMLElement {
   player_width: string;
   player_height: string;
   player_background: string;
+  player_theater: string;
 
   set media(media: HTMLVideoElement) {
     this.player_media = media;
@@ -71,6 +72,7 @@ class Controls extends HTMLElement {
       "player_width",
       "player_height",
       "player_background",
+      "player_theater",
       "duration",
       "current"
     ];
@@ -111,6 +113,7 @@ class Controls extends HTMLElement {
             player_width="${this.player_width}"
             player_height="${this.player_height}"
             player_background="${this.player_background}"
+            player_theater="${this.player_theater}"
           ></tf-controls-modes>
         </div>
       </div>

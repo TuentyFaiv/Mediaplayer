@@ -11,4 +11,10 @@
       gap: .3em;
     }
   }
+  @media screen and (max-width: 375px) {
+    & tf-controls-modes,
+    &__time-sound {
+      gap: .1em;
+    }
+  }
 }

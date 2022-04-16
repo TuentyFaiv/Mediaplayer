@@ -22,6 +22,14 @@
       opacity: 1;
     }
   }
+  &--mobile {
+    display: none;
+    // transform: rotate(-90deg) translate(-15px, 1em);
+    // transform-origin: left;
+    // #{$root}__button {
+    //   transform: rotate(90deg);
+    // }
+  }
   &__button {
     display: flex;
     align-items: center;
@@ -179,3 +187,5 @@
     }
   }
 }
+
+@import "./responsive/sound";

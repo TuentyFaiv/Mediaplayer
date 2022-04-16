@@ -24,6 +24,7 @@ class MediaPlayer extends HTMLElement {
   player_width: string;
   player_height: string;
   player_background: string;
+  player_theater: string;
 
   //Life cycle
   constructor() {
@@ -36,6 +37,7 @@ class MediaPlayer extends HTMLElement {
     this.player_width = "100%";
     this.player_height = "auto";
     this.player_background = "#040306";
+    this.player_theater = "false";
   }
 
   static get observedAttributes(): string[] {
@@ -46,7 +48,8 @@ class MediaPlayer extends HTMLElement {
       "player_title",
       "player_width",
       "player_height",
-      "player_background"
+      "player_background",
+      "player_theater"
     ];
   }
 
@@ -67,6 +70,7 @@ class MediaPlayer extends HTMLElement {
           player_width="${this.player_width}"
           player_height="${this.player_height}"
           player_background="${this.player_background}"
+          player_theater="${this.player_theater}"
         ></tf-player-controls>
         <div class="player__start">
           <button class="player__start-button" title="Play or Replay (Spacebar)">

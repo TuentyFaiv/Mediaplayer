@@ -11,11 +11,15 @@ import PinPIcon from "@icons/pinp.svg";
 class ControlsModes extends HTMLElement {
   protected btns: NodeListOf<HTMLButtonElement>;
   protected teatherState: boolean;
+  protected pipButton: HTMLButtonElement;
+  protected theaterButton: HTMLButtonElement;
+  protected fullscrennButton: HTMLButtonElement;
   //Attributes
   player_media: HTMLVideoElement;
   player_width: string;
   player_height: string;
   player_background: string;
+  player_theater: string;
 
   set media(media: HTMLVideoElement) {
     this.player_media = media;
@@ -29,7 +33,7 @@ class ControlsModes extends HTMLElement {
   }
 
   static get observedAttributes(): string[] {
-    return ["player_media", "player_width", "player_height", "player_background"];
+    return ["player_media", "player_width", "player_height", "player_background", "player_theater"];
   }
 
   attributeChangedCallback(attr, oldAttr, newAttr): void {
@@ -40,9 +44,9 @@ class ControlsModes extends HTMLElement {
     const template = document.createElement("template");
     template.innerHTML = `
       ${this.getStyles()}
-      <button class="mode" title="Picture in picture (p)">${PinPIcon}</button>
-      <button class="mode" title="Theater mode (t)">${theaterOnIcon}</button>
-      <button class="mode" title="Fullscreen (f)">${fullscreenIcon}</button>
+      <button class="mode" id="pip" title="Picture in picture (p)">${PinPIcon}</button>
+      <button class="mode" id="theaterMode" title="Theater mode (t)">${theaterOnIcon}</button>
+      <button class="mode" id="fullscreen" title="Fullscreen (f)">${fullscreenIcon}</button>
     `;
 
     return template;
@@ -68,14 +72,19 @@ class ControlsModes extends HTMLElement {
     this.btns.forEach((element: HTMLElement) => {
       element.removeChild(element.firstChild);
     });
+    this.pipButton = this.shadowRoot.querySelector("button#pip");
+    this.theaterButton = this.shadowRoot.querySelector("button#theaterMode");
+    this.fullscrennButton = this.shadowRoot.querySelector("button#fullscreen");
 
     if (!("pictureInPictureEnabled" in document)) {
-      this.btns[0].style.display = "none";
+      this.pipButton.style.display = "none";
     }
 
-    this.btns[0].onclick = () => this.setPinP();
-    this.btns[1].onclick = () => this.toggleTeatherMode();
-    this.btns[2].onclick = () => this.toggleFullScreen();
+    this.pipButton.onclick = () => this.setPinP();
+    this.theaterButton.onclick = () => this.toggleTeatherMode();
+    this.fullscrennButton.onclick = () => this.toggleFullScreen();
+
+    if (this.player_theater !== "true") this.theaterButton.remove();
 
     document.addEventListener("keydown", this.keyPress.bind(this));
   }
@@ -94,7 +103,7 @@ class ControlsModes extends HTMLElement {
         this.setPinP();
         break;
       case 84:
-        this.toggleTeatherMode();
+        if (this.player_theater === "true") this.toggleTeatherMode();
         break;
       default:
         break;
@@ -103,7 +112,7 @@ class ControlsModes extends HTMLElement {
 
   protected setPinP(): void {
     if (!("pictureInPictureEnabled" in document)) {
-      this.btns[0].style.display = "none";
+      this.pipButton.style.display = "none";
     } else {
       this.player_media.requestPictureInPicture();
     }
@@ -112,10 +121,10 @@ class ControlsModes extends HTMLElement {
   protected toggleFullScreen(): void {
     if (document.fullscreenElement) {
       document.exitFullscreen();
-      changeIcon(this.btns[2], fullscreenIcon);
+      changeIcon(this.fullscrennButton, fullscreenIcon);
     } else {
       this.player_media.parentElement.requestFullscreen();
-      changeIcon(this.btns[2], fullscreenExitIcon);
+      changeIcon(this.fullscrennButton, fullscreenExitIcon);
     }
   }
 
@@ -128,7 +137,7 @@ class ControlsModes extends HTMLElement {
       this.player_media.parentElement.style.left = "";
       this.player_media.parentElement.style.right = "";
       this.player_media.style.background = this.player_background;
-      changeIcon(this.btns[1], theaterOnIcon);
+      changeIcon(this.theaterButton, theaterOnIcon);
       this.teatherState = false;
     } else {
       this.player_media.parentElement.style.position = "absolute";
@@ -138,7 +147,7 @@ class ControlsModes extends HTMLElement {
       this.player_media.parentElement.style.left = "0";
       this.player_media.parentElement.style.right = "0";
       this.player_media.style.background = this.player_background;
-      changeIcon(this.btns[1], theaterOffIcon);
+      changeIcon(this.theaterButton, theaterOffIcon);
       this.teatherState = true;
     }
   }

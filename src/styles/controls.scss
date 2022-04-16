@@ -186,11 +186,20 @@
     width: 0%;
     background: rgba(255, 255, 255, 0.18);
   }
+  & tf-controls-time-text {
+    min-width: max-content;
+  }
   & tf-controls-modes,
   &__time-sound {
     display: flex;
     align-items: center;
     gap: .8em;
+  }
+  &__time-sound {
+    &--mobile {
+      position: relative;
+      z-index: 30;
+    }
   }
   tf-controls-play {
     padding: 7px 0;
